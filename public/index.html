@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vexis Notifier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --yellow:     #F5C542;
+  --yellow-dim: #C9A02A;
+  --yellow-glow:#F5C54233;
+  --black:      #0A0A0A;
+  --surface:    #111111;
+  --surface2:   #1A1A1A;
+  --surface3:   #222222;
+  --border:     #2A2A2A;
+  --text:       #F0F0F0;
+  --muted:      #888888;
+  --danger:     #FF4444;
+  --success:    #44CC88;
+  --radius:     12px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--black);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--surface);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--yellow-dim);}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2rem;height:64px;
+  background:rgba(10,10,10,0.85);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{
+  display:flex;align-items:center;gap:10px;
+  font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;
+  color:var(--yellow);text-decoration:none;
+}
+.nav-logo svg{width:28px;height:28px;}
+.nav-right{display:flex;align-items:center;gap:12px;}
+.nav-user{display:flex;align-items:center;gap:10px;font-size:.875rem;}
+.nav-avatar{width:32px;height:32px;border-radius:50%;border:2px solid var(--yellow);}
+.nav-credits{
+  background:var(--surface2);border:1px solid var(--border);
+  padding:4px 12px;border-radius:20px;font-size:.8rem;
+  font-family:'DM Mono',monospace;color:var(--yellow);
+}
+
+/* ── BUTTONS ── */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 20px;border-radius:var(--radius);
+  font-family:'Inter',sans-serif;font-weight:600;font-size:.875rem;
+  cursor:pointer;border:none;transition:all .15s;text-decoration:none;
+  white-space:nowrap;
+}
+.btn-primary{background:var(--yellow);color:#000;}
+.btn-primary:hover{background:#FFD44F;transform:translateY(-1px);box-shadow:0 4px 20px var(--yellow-glow);}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border);}
+.btn-ghost:hover{border-color:var(--yellow);color:var(--yellow);}
+.btn-danger{background:var(--danger);color:#fff;}
+.btn-danger:hover{opacity:.85;}
+.btn-success{background:var(--success);color:#000;}
+.btn-success:hover{opacity:.85;}
+.btn-discord{background:#5865F2;color:#fff;}
+.btn-discord:hover{background:#4752C4;}
+.btn-sm{padding:6px 14px;font-size:.8rem;}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important;}
+
+/* ── PAGES ── */
+.page{display:none;min-height:100vh;padding-top:64px;}
+.page.active{display:block;}
+
+/* ──────────────────────────────────────────
+   LANDING
+──────────────────────────────────────────*/
+#page-landing{
+  background:
+    radial-gradient(ellipse 80% 40% at 50% 0%, rgba(245,197,66,.08) 0%, transparent 70%),
+    var(--black);
+}
+.hero{
+  display:flex;flex-direction:column;align-items:center;
+  text-align:center;padding:6rem 2rem 4rem;
+  position:relative;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--surface2);border:1px solid var(--border);
+  padding:6px 14px;border-radius:20px;font-size:.78rem;
+  color:var(--yellow);margin-bottom:2rem;font-family:'DM Mono',monospace;
+}
+.hero-badge::before{content:'';width:6px;height:6px;background:var(--yellow);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.hero h1{
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:clamp(2.5rem,7vw,5rem);line-height:1.05;
+  margin-bottom:1.5rem;
+}
+.hero h1 span{color:var(--yellow);}
+.hero p{
+  color:var(--muted);font-size:1.1rem;max-width:520px;
+  margin-bottom:2.5rem;line-height:1.7;
+}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+.hero-gfx{
+  margin-top:4rem;width:100%;max-width:900px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:20px;padding:2px;overflow:hidden;
+  box-shadow:0 40px 80px rgba(0,0,0,.6),0 0 60px rgba(245,197,66,.04);
+}
+.hero-gfx-inner{
+  background:var(--surface2);border-radius:18px;padding:2rem;
+  display:grid;grid-template-columns:1fr 1fr;gap:1rem;
+}
+.stat-card{
+  background:var(--surface3);border:1px solid var(--border);
+  border-radius:10px;padding:1.25rem;text-align:left;
+}
+.stat-card .stat-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
+.stat-card .stat-value{
+  font-family:'Syne',sans-serif;font-weight:700;font-size:2rem;
+  color:var(--yellow);margin-top:.25rem;
+}
+.stat-card .stat-sub{font-size:.8rem;color:var(--muted);margin-top:.25rem;}
+
+/* stats row */
+.stats-row{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  border:1px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;max-width:900px;margin:4rem auto;
+}
+.stats-cell{
+  background:var(--surface);padding:2rem;text-align:center;
+}
+.stats-cell .val{
+  font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:800;color:var(--yellow);
+}
+.stats-cell .lbl{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:.5rem;}
+
+/* pricing */
+.pricing-section{padding:4rem 2rem;max-width:900px;margin:0 auto;}
+.pricing-section h2{
+  font-family:'Syne',sans-serif;font-size:2rem;font-weight:700;
+  text-align:center;margin-bottom:.75rem;
+}
+.pricing-section .sub{text-align:center;color:var(--muted);margin-bottom:3rem;}
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+.price-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:20px;padding:2rem;position:relative;overflow:hidden;
+  transition:border-color .2s,transform .2s;
+}
+.price-card:hover{border-color:var(--yellow);transform:translateY(-3px);}
+.price-card.featured{border-color:var(--yellow);}
+.price-card.featured::before{
+  content:'AUCTION';position:absolute;top:1rem;right:1rem;
+  background:var(--yellow);color:#000;font-size:.65rem;font-weight:700;
+  padding:3px 8px;border-radius:4px;letter-spacing:.08em;
+}
+.price-card h3{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;margin-bottom:.5rem;}
+.price-card .price{
+  font-family:'DM Mono',monospace;font-size:2.5rem;font-weight:500;
+  color:var(--yellow);margin:.75rem 0;
+}
+.price-card .price span{font-size:1rem;color:var(--muted);}
+.price-card ul{list-style:none;margin:1rem 0 1.5rem;display:flex;flex-direction:column;gap:.5rem;}
+.price-card ul li{font-size:.875rem;color:var(--muted);padding-left:1.25rem;position:relative;}
+.price-card ul li::before{content:'→';position:absolute;left:0;color:var(--yellow);}
+
+/* footer */
+footer{
+  border-top:1px solid var(--border);padding:2rem;
+  text-align:center;color:var(--muted);font-size:.8rem;
+}
+footer a{color:var(--yellow);text-decoration:none;}
+
+/* ──────────────────────────────────────────
+   DASHBOARD
+──────────────────────────────────────────*/
+.dashboard-layout{
+  max-width:1200px;margin:0 auto;
+  padding:2rem 1.5rem;
+  display:grid;grid-template-columns:260px 1fr;gap:1.5rem;
+  min-height:calc(100vh - 64px);
+}
+.sidebar{
+  display:flex;flex-direction:column;gap:.5rem;
+  position:sticky;top:80px;align-self:start;
+}
+.sidebar-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;border-radius:10px;
+  cursor:pointer;transition:all .15s;
+  font-size:.875rem;font-weight:500;color:var(--muted);
+  border:none;background:none;text-align:left;width:100%;
+}
+.sidebar-item:hover{background:var(--surface2);color:var(--text);}
+.sidebar-item.active{background:var(--surface2);color:var(--yellow);border:1px solid var(--border);}
+.sidebar-item svg{width:16px;height:16px;flex-shrink:0;}
+.sidebar-divider{height:1px;background:var(--border);margin:.5rem 0;}
+.sidebar-admin{color:var(--danger)!important;}
+.sidebar-admin.active{border-color:var(--danger)!important;color:var(--danger)!important;}
+
+.main-content{display:flex;flex-direction:column;gap:1.5rem;}
+.dash-panel{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:16px;padding:1.5rem;
+  display:none;flex-direction:column;gap:1.25rem;
+}
+.dash-panel.active{display:flex;}
+.dash-panel h2{
+  font-family:'Syne',sans-serif;font-size:1.25rem;font-weight:700;
+  display:flex;align-items:center;gap:.5rem;
+}
+.panel-badge{
+  font-size:.7rem;font-family:'DM Mono',monospace;
+  background:var(--surface2);border:1px solid var(--border);
+  padding:2px 8px;border-radius:4px;color:var(--muted);
+}
+
+/* ── CARDS ── */
+.card{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:12px;padding:1.25rem;
+}
+.card-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.card-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;}
+.key-display{
+  font-family:'DM Mono',monospace;font-size:.9rem;
+  background:var(--surface3);border:1px solid var(--border);
+  padding:10px 14px;border-radius:8px;word-break:break-all;
+  position:relative;cursor:pointer;
+  transition:border-color .15s;
+}
+.key-display:hover{border-color:var(--yellow);}
+.key-display .copy-hint{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  font-size:.7rem;color:var(--muted);
+}
+.key-display.copied{border-color:var(--success);}
+.expiry-bar-wrap{margin-top:.5rem;}
+.expiry-bar{height:4px;background:var(--surface3);border-radius:2px;overflow:hidden;}
+.expiry-bar-fill{height:100%;background:var(--yellow);transition:width .5s;}
+.expiry-text{font-size:.75rem;color:var(--muted);margin-top:.4rem;font-family:'DM Mono',monospace;}
+
+/* ── SLOT STATUS ── */
+.slot-status{
+  display:flex;align-items:center;gap:8px;
+  font-size:.875rem;font-weight:600;
+}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.dot-green{background:var(--success);box-shadow:0 0 8px var(--success);}
+.dot-red{background:var(--danger);box-shadow:0 0 8px var(--danger);}
+.dot-yellow{background:var(--yellow);box-shadow:0 0 8px var(--yellow);}
+.dot-gray{background:var(--muted);}
+
+/* ── FORM ── */
+.form-group{display:flex;flex-direction:column;gap:.5rem;}
+.form-group label{font-size:.8rem;color:var(--muted);font-weight:500;}
+input[type=text],input[type=number],select{
+  background:var(--surface3);border:1px solid var(--border);
+  color:var(--text);padding:10px 14px;border-radius:8px;
+  font-size:.875rem;font-family:'Inter',sans-serif;
+  outline:none;transition:border-color .15s;width:100%;
+}
+input:focus,select:focus{border-color:var(--yellow);}
+input::placeholder{color:var(--muted);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;}
+
+/* ── BID SLOTS ── */
+.bid-slot-card{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:12px;padding:1.25rem;
+  transition:border-color .2s;
+}
+.bid-slot-card.live{border-color:var(--danger);}
+.bid-slot-card.cooldown{border-color:var(--muted);}
+.bid-slot-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.bid-slot-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;}
+.timer{
+  font-family:'DM Mono',monospace;font-size:1.1rem;color:var(--yellow);
+  font-weight:500;
+}
+.bids-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1rem;}
+
+/* ── PAYMENT ── */
+.qr-box{
+  display:flex;flex-direction:column;align-items:center;gap:1rem;
+  background:var(--surface3);border:1px solid var(--border);
+  border-radius:12px;padding:1.5rem;
+}
+.qr-box img{border-radius:8px;border:3px solid var(--yellow);}
+.address-box{
+  font-family:'DM Mono',monospace;font-size:.8rem;word-break:break-all;
+  background:var(--surface);border:1px solid var(--border);
+  padding:10px;border-radius:8px;text-align:center;cursor:pointer;
+  transition:border-color .15s;
+}
+.address-box:hover{border-color:var(--yellow);}
+
+/* ── TOAST ── */
+#toast{
+  position:fixed;bottom:2rem;right:2rem;z-index:9999;
+  display:flex;flex-direction:column;gap:.5rem;
+}
+.toast-item{
+  background:var(--surface2);border:1px solid var(--border);
+  padding:12px 18px;border-radius:10px;font-size:.875rem;
+  animation:slideIn .2s ease;max-width:320px;
+  display:flex;align-items:center;gap:.5rem;
+}
+.toast-item.success{border-color:var(--success);color:var(--success);}
+.toast-item.error{border-color:var(--danger);color:var(--danger);}
+.toast-item.info{border-color:var(--yellow);color:var(--yellow);}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:translateX(0);}}
+
+/* ── MODAL ── */
+.modal-overlay{
+  position:fixed;inset:0;z-index:500;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;padding:1rem;
+}
+.modal-overlay.open{display:flex;}
+.modal{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:20px;padding:2rem;width:100%;max-width:480px;
+  position:relative;animation:modalIn .2s ease;
+}
+@keyframes modalIn{from{opacity:0;transform:scale(.95);}to{opacity:1;transform:scale(1);}}
+.modal h3{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:1.25rem;}
+.modal-close{
+  position:absolute;top:1rem;right:1rem;
+  background:none;border:none;color:var(--muted);cursor:pointer;
+  font-size:1.2rem;line-height:1;padding:4px;
+}
+.modal-close:hover{color:var(--text);}
+.modal-actions{display:flex;gap:.75rem;margin-top:1.5rem;justify-content:flex-end;}
+
+/* ── TABLE ── */
+.data-table{width:100%;border-collapse:collapse;font-size:.8rem;}
+.data-table th{
+  text-align:left;padding:10px 12px;
+  color:var(--muted);font-weight:500;font-size:.72rem;
+  text-transform:uppercase;letter-spacing:.08em;
+  border-bottom:1px solid var(--border);
+}
+.data-table td{
+  padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.04);
+  vertical-align:middle;
+}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:hover td{background:var(--surface2);}
+
+/* ── TAG ── */
+.tag{
+  display:inline-block;padding:2px 8px;border-radius:4px;
+  font-size:.7rem;font-weight:600;font-family:'DM Mono',monospace;
+}
+.tag-green{background:rgba(68,204,136,.15);color:var(--success);}
+.tag-red{background:rgba(255,68,68,.15);color:var(--danger);}
+.tag-yellow{background:rgba(245,197,66,.15);color:var(--yellow);}
+.tag-gray{background:var(--surface3);color:var(--muted);}
+
+/* ── ADMIN GRID ── */
+.admin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;}
+.admin-stat{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;padding:1rem;
+}
+.admin-stat .val{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:700;color:var(--yellow);}
+.admin-stat .lbl{font-size:.72rem;color:var(--muted);text-transform:uppercase;margin-top:.25rem;}
+
+/* ── TRANSFER HISTORY ── */
+.transfer-list{display:flex;flex-direction:column;gap:.5rem;}
+.transfer-item{
+  background:var(--surface3);border-radius:8px;padding:.75rem 1rem;
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:.8rem;
+}
+
+/* ── LOADING ── */
+.loading-spin{
+  width:24px;height:24px;border:2px solid var(--border);
+  border-top-color:var(--yellow);border-radius:50%;
+  animation:spin .6s linear infinite;display:inline-block;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── EMPTY STATE ── */
+.empty{
+  text-align:center;padding:3rem;color:var(--muted);
+}
+.empty svg{width:40px;height:40px;margin-bottom:1rem;opacity:.3;}
+.empty p{font-size:.9rem;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .dashboard-layout{grid-template-columns:1fr;gap:1rem;}
+  .sidebar{position:static;flex-direction:row;flex-wrap:wrap;}
+  .sidebar-divider{display:none;}
+  .sidebar-item{flex:1 1 auto;min-width:80px;justify-content:center;}
+  .sidebar-item span{display:none;}
+  .pricing-grid{grid-template-columns:1fr;}
+  .form-row,.form-row-3{grid-template-columns:1fr;}
+  .bids-grid{grid-template-columns:1fr;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .hero-gfx-inner{grid-template-columns:1fr;}
+}
+@media(max-width:480px){
+  .stats-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo" onclick="showPage('landing');return false;">
+    <svg viewBox="0 0 28 28" fill="none"><polygon points="14,2 26,8 26,20 14,26 2,20 2,8" fill="#F5C542" opacity=".15"/><polygon points="14,4 24,9.5 24,18.5 14,24 4,18.5 4,9.5" stroke="#F5C542" stroke-width="1.5" fill="none"/><circle cx="14" cy="14" r="3" fill="#F5C542"/></svg>
+    Vexis
+  </a>
+  <div class="nav-right">
+    <div id="nav-guest" style="display:flex;gap:8px;">
+      <a href="/auth/discord" class="btn btn-discord btn-sm">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028 13.953 13.953 0 001.226-1.994.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z"/></svg>
+        Login
+      </a>
+    </div>
+    <div id="nav-user" style="display:none;align-items:center;gap:10px;" class="nav-user">
+      <span class="nav-credits" id="nav-credits">0 CR</span>
+      <img id="nav-avatar" class="nav-avatar" src="" alt="">
+      <span id="nav-username" style="font-size:.875rem;font-weight:500;"></span>
+      <a href="/auth/logout" class="btn btn-ghost btn-sm">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════════
+     LANDING PAGE
+═══════════════════════════════════════════════ -->
+<div id="page-landing" class="page active">
+  <div class="hero">
+    <div class="hero-badge">
+      <span>●</span> Live · Dream Notifier
+    </div>
+    <h1>Dream <span>Brainrots,</span><br>In your reach.</h1>
+    <p>Get notified about the most valuable brainrots instantly, zero hassle. Powered by the Vexis engine.</p>
+    <div class="hero-cta">
+      <a href="/auth/discord" class="btn btn-primary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028 13.953 13.953 0 001.226-1.994.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z"/></svg>
+        Get Started Free
+      </a>
+      <button class="btn btn-ghost" onclick="scrollToPricing()">View Plans</button>
+    </div>
+
+    <div class="hero-gfx">
+      <div class="hero-gfx-inner">
+        <div class="stat-card">
+          <div class="stat-label">Pro Tier</div>
+          <div class="stat-value">$8</div>
+          <div class="stat-sub">per hour · 6 global slots</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Auction Tier</div>
+          <div class="stat-value">$16+</div>
+          <div class="stat-sub">min bid · 2hr prize · 2 slots</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Payments</div>
+          <div class="stat-value" style="font-size:1.4rem;">BTC · LTC</div>
+          <div class="stat-sub">Auto-confirmed via NowPayments</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Auth</div>
+          <div class="stat-value" style="font-size:1.3rem;">Discord</div>
+          <div class="stat-sub">OAuth2 · Luarmor HWID lock</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-row" style="margin:0 auto 4rem;max-width:900px;width:calc(100% - 4rem);">
+    <div class="stats-cell"><div class="val">4k+</div><div class="lbl">Unique Users</div></div>
+    <div class="stats-cell"><div class="val">1214</div><div class="lbl">Customers</div></div>
+    <div class="stats-cell"><div class="val">26</div><div class="lbl">Active Subs</div></div>
+    <div class="stats-cell"><div class="val">1B+</div><div class="lbl">Notifies Sent</div></div>
+  </div>
+
+  <div class="pricing-section" id="pricing">
+    <h2>Simple Pricing</h2>
+    <p class="sub">Credits never expire · $1 = 1 Credit · Pay once, use anytime</p>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <h3>⭐ Pro</h3>
+        <div class="price">$8<span>/hr</span></div>
+        <ul>
+          <li>Up to 6 concurrent global slots</li>
+          <li>Full Luarmor HWID protection</li>
+          <li>Reset HWID anytime from dashboard</li>
+          <li>Instant key delivery</li>
+          <li>Transfer credits to friends</li>
+        </ul>
+        <a href="/auth/discord" class="btn btn-primary" style="width:100%;justify-content:center;">Get Pro</a>
+      </div>
+      <div class="price-card featured">
+        <h3>🏆 Bid Slot</h3>
+        <div class="price">$16<span> min</span></div>
+        <ul>
+          <li>Only 2 global bid slots available</li>
+          <li>Winner gets 2 hours flat</li>
+          <li>5-minute live auction</li>
+          <li>+1min extension on last-second bids</li>
+          <li>Losers fully refunded instantly</li>
+        </ul>
+        <a href="/auth/discord" class="btn btn-primary" style="width:100%;justify-content:center;">Join Auction</a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:.75rem;">
+      <svg width="20" height="20" viewBox="0 0 28 28" fill="none"><polygon points="14,4 24,9.5 24,18.5 14,24 4,18.5 4,9.5" stroke="#F5C542" stroke-width="1.5" fill="none"/><circle cx="14" cy="14" r="3" fill="#F5C542"/></svg>
+      <span style="font-family:'Syne',sans-serif;font-weight:700;color:var(--yellow);">Vexis Notifier</span>
+    </div>
+    <p>© 2026 Vexis Notifier. All Rights Reserved.</p>
+  </footer>
+</div>
+
+<!-- ════════════════════════════════════════════
+     DASHBOARD
+═══════════════════════════════════════════════ -->
+<div id="page-dashboard" class="page">
+  <div class="dashboard-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <button class="sidebar-item active" onclick="showTab('overview')" id="tab-btn-overview">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        <span>Overview</span>
+      </button>
+      <button class="sidebar-item" onclick="showTab('pro')" id="tab-btn-pro">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <span>Pro Slot</span>
+      </button>
+      <button class="sidebar-item" onclick="showTab('bid')" id="tab-btn-bid">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+        <span>Bid Slots</span>
+      </button>
+      <button class="sidebar-item" onclick="showTab('credits')" id="tab-btn-credits">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        <span>Credits</span>
+      </button>
+      <button class="sidebar-item" onclick="showTab('transfer')" id="tab-btn-transfer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+        <span>Transfer</span>
+      </button>
+      <div class="sidebar-divider" id="admin-divider" style="display:none;"></div>
+      <button class="sidebar-item sidebar-admin" onclick="showTab('admin')" id="tab-btn-admin" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Admin</span>
+      </button>
+    </aside>
+
+    <!-- Main -->
+    <main class="main-content">
+
+      <!-- OVERVIEW -->
+      <section class="dash-panel active" id="panel-overview">
+        <h2>👋 Overview</h2>
+        <div class="card">
+          <div class="card-row">
+            <div>
+              <div class="card-label">Your Balance</div>
+              <div style="font-family:'DM Mono',monospace;font-size:2rem;font-weight:500;color:var(--yellow);" id="ov-credits">0</div>
+              <div style="font-size:.78rem;color:var(--muted);margin-top:.25rem;">Credits ($1 = 1 credit)</div>
+            </div>
+            <button class="btn btn-primary" onclick="showTab('credits')">Buy Credits</button>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;" id="ov-slots">
+          <div class="card">
+            <div class="card-label">Pro Slot</div>
+            <div class="slot-status" id="ov-pro-status"><span class="dot dot-gray"></span> No active slot</div>
+            <div id="ov-pro-expiry" style="margin-top:.5rem;"></div>
+          </div>
+          <div class="card">
+            <div class="card-label">Bid Slot</div>
+            <div class="slot-status" id="ov-bid-status"><span class="dot dot-gray"></span> No active slot</div>
+            <div id="ov-bid-expiry" style="margin-top:.5rem;"></div>
+          </div>
+        </div>
+        <!-- global capacity -->
+        <div class="card">
+          <div class="card-label">Global Capacity</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.5rem;">
+            <div>
+              <div style="font-size:.8rem;color:var(--muted);margin-bottom:.5rem;">Pro Slots</div>
+              <div class="expiry-bar"><div class="expiry-bar-fill" id="pro-capacity-bar" style="width:0%"></div></div>
+              <div class="expiry-text" id="pro-capacity-text">0/6</div>
+            </div>
+            <div>
+              <div style="font-size:.8rem;color:var(--muted);margin-bottom:.5rem;">Bid Slots</div>
+              <div style="display:flex;gap:.5rem;" id="bid-capacity-dots"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRO SLOT -->
+      <section class="dash-panel" id="panel-pro">
+        <h2>⭐ Pro Slot <span class="panel-badge">$8/hr</span></h2>
+
+        <div class="card" id="pro-active-card" style="display:none;">
+          <div class="card-label">Active Key</div>
+          <div class="key-display" id="pro-key" onclick="copyKey('pro-key')">
+            <span id="pro-key-text">—</span>
+            <span class="copy-hint">click to copy</span>
+          </div>
+          <div class="expiry-bar-wrap">
+            <div class="expiry-bar"><div class="expiry-bar-fill" id="pro-expiry-bar" style="width:0%"></div></div>
+            <div class="expiry-text" id="pro-expiry-text">—</div>
+          </div>
+          <div style="display:flex;gap:.75rem;margin-top:1rem;flex-wrap:wrap;">
+            <button class="btn btn-ghost btn-sm" onclick="resetHWID('pro')">🔄 Reset HWID</button>
+            <button class="btn btn-ghost btn-sm" onclick="copyKey('pro-key')">📋 Copy Key</button>
+          </div>
+        </div>
+
+        <div class="card" id="pro-inactive-card">
+          <div class="card-label">Activate Pro Slot</div>
+          <p style="font-size:.85rem;color:var(--muted);margin:.5rem 0 1rem;">Spend credits to activate your Pro slot. Each credit = 7.5 minutes (8 credits = 1 hour).</p>
+          <div class="form-group">
+            <label>Credits to spend (balance: <span id="pro-balance">0</span>)</label>
+            <input type="number" id="pro-credits-input" placeholder="e.g. 8 = 1 hour" min="1">
+          </div>
+          <div style="margin:.75rem 0;font-size:.8rem;color:var(--muted);" id="pro-hours-preview">Enter credits to see duration</div>
+          <button class="btn btn-primary" onclick="activateProSlot()" id="pro-activate-btn">Activate Slot</button>
+        </div>
+
+        <!-- Key history -->
+        <div class="card" id="pro-history-card" style="display:none;">
+          <div class="card-label">Key History</div>
+          <table class="data-table" id="pro-history-table">
+            <thead><tr><th>Key</th><th>Credits</th><th>Activated</th><th>Status</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- BID SLOTS -->
+      <section class="dash-panel" id="panel-bid">
+        <h2>🏆 Bid Slots <span class="panel-badge">$16 min · 2hr prize</span></h2>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;" id="bid-slots-grid">
+          <!-- rendered by JS -->
+        </div>
+        <!-- active bid key -->
+        <div class="card" id="bid-key-card" style="display:none;">
+          <div class="card-label">Your Active Bid Key</div>
+          <div class="key-display" id="bid-key" onclick="copyKey('bid-key')">
+            <span id="bid-key-text">—</span>
+            <span class="copy-hint">click to copy</span>
+          </div>
+          <div class="expiry-bar-wrap">
+            <div class="expiry-bar"><div class="expiry-bar-fill" id="bid-expiry-bar" style="width:0%"></div></div>
+            <div class="expiry-text" id="bid-expiry-text">—</div>
+          </div>
+          <div style="display:flex;gap:.75rem;margin-top:1rem;flex-wrap:wrap;">
+            <button class="btn btn-ghost btn-sm" onclick="resetHWID('bid')">🔄 Reset HWID</button>
+            <button class="btn btn-ghost btn-sm" onclick="copyKey('bid-key')">📋 Copy Key</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- CREDITS -->
+      <section class="dash-panel" id="panel-credits">
+        <h2>💳 Buy Credits</h2>
+        <div class="card">
+          <div style="font-size:.85rem;color:var(--muted);margin-bottom:1rem;">$1 = 1 Credit. Credits never expire. Minimum $1.</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Amount (USD)</label>
+              <input type="number" id="buy-amount" placeholder="e.g. 50" min="1">
+            </div>
+            <div class="form-group">
+              <label>Coin</label>
+              <select id="buy-coin">
+                <option value="btc">₿ Bitcoin (BTC)</option>
+                <option value="ltc">Ł Litecoin (LTC)</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary" style="margin-top:1rem;" onclick="createPayment()">Generate Invoice</button>
+        </div>
+        <div id="payment-result" style="display:none;">
+          <!-- filled by JS -->
+        </div>
+      </section>
+
+      <!-- TRANSFER -->
+      <section class="dash-panel" id="panel-transfer">
+        <h2>↔️ Transfer Credits</h2>
+        <div class="card">
+          <p style="font-size:.85rem;color:var(--muted);margin-bottom:1rem;">Send credits to another Vexis user. They must have logged in at least once. Cannot be undone.</p>
+          <div class="form-group">
+            <label>Their Discord User ID</label>
+            <input type="text" id="transfer-target" placeholder="e.g. 123456789012345678">
+          </div>
+          <div class="form-group" style="margin-top:.75rem;">
+            <label>Amount (your balance: <span id="transfer-balance">0</span>)</label>
+            <input type="number" id="transfer-amount" placeholder="e.g. 10" min="1">
+          </div>
+          <button class="btn btn-primary" style="margin-top:1rem;" onclick="transferCredits()">Send Credits</button>
+        </div>
+        <div class="card" id="transfer-history-card" style="display:none;">
+          <div class="card-label">Recent Transfers</div>
+          <div class="transfer-list" id="transfer-history"></div>
+        </div>
+      </section>
+
+      <!-- ADMIN -->
+      <section class="dash-panel" id="panel-admin">
+        <h2>🛡️ Admin Panel</h2>
+        <div class="admin-grid" id="admin-stats">
+          <!-- filled by JS -->
+        </div>
+
+        <!-- Pause controls -->
+        <div class="card">
+          <div class="card-label">Slot Controls</div>
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:.75rem;">
+            <button class="btn btn-danger btn-sm" id="pause-pro-btn" onclick="togglePause('pro')">⏸ Pause Pro</button>
+            <button class="btn btn-danger btn-sm" id="pause-bid-btn" onclick="togglePause('bid')">⏸ Pause Bid</button>
+          </div>
+          <div id="pause-status" style="font-size:.78rem;color:var(--muted);margin-top:.75rem;"></div>
+        </div>
+
+        <!-- Find user -->
+        <div class="card">
+          <div class="card-label">Find & Manage User</div>
+          <div style="display:flex;gap:.75rem;margin-top:.75rem;flex-wrap:wrap;">
+            <input type="text" id="admin-user-search" placeholder="Discord ID or username" style="flex:1;min-width:200px;">
+            <button class="btn btn-ghost btn-sm" onclick="adminFindUser()">Search</button>
+          </div>
+          <div id="admin-user-results" style="margin-top:1rem;"></div>
+        </div>
+
+        <!-- Auction management -->
+        <div class="card">
+          <div class="card-label">Auction Management</div>
+          <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.75rem;">
+            <button class="btn btn-ghost btn-sm" onclick="adminResetAuction('bid_slot_1')">Reset Bid Slot 1</button>
+            <button class="btn btn-ghost btn-sm" onclick="adminResetAuction('bid_slot_2')">Reset Bid Slot 2</button>
+            <button class="btn btn-danger btn-sm" onclick="adminForceEnd('bid_slot_1')">Force End Slot 1</button>
+            <button class="btn btn-danger btn-sm" onclick="adminForceEnd('bid_slot_2')">Force End Slot 2</button>
+          </div>
+        </div>
+
+        <!-- Recent users table -->
+        <div class="card">
+          <div class="card-label">Recent Users</div>
+          <div style="overflow-x:auto;margin-top:.75rem;">
+            <table class="data-table" id="admin-users-table">
+              <thead><tr><th>User</th><th>Credits</th><th>Last Login</th><th>Actions</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- BID MODAL -->
+<div class="modal-overlay" id="bid-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeBidModal()">✕</button>
+    <h3>Place Bid — <span id="bid-modal-title">Slot</span></h3>
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:1rem;" id="bid-modal-desc">Win 2 hours flat. Losers are fully refunded.</p>
+    <div class="form-group">
+      <label id="bid-modal-label">Bid amount (min 16)</label>
+      <input type="number" id="bid-amount-input" placeholder="e.g. 20" min="16">
+    </div>
+    <div style="font-size:.8rem;color:var(--muted);margin-top:.5rem;" id="bid-modal-info"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeBidModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitBid()" id="bid-submit-btn">Place Bid</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN GIVE CREDITS MODAL -->
+<div class="modal-overlay" id="give-credits-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('give-credits-modal').classList.remove('open')">✕</button>
+    <h3>Manage Credits — <span id="gcm-username"></span></h3>
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:1rem;">Current balance: <span id="gcm-balance" style="color:var(--yellow);"></span></p>
+    <div class="form-group">
+      <label>Amount to give (use negative to remove)</label>
+      <input type="number" id="gcm-amount" placeholder="e.g. 50 or -10">
+    </div>
+    <div class="form-group" style="margin-top:.75rem;">
+      <label>Or set exact balance</label>
+      <input type="number" id="gcm-set-amount" placeholder="e.g. 100">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="document.getElementById('give-credits-modal').classList.remove('open')">Cancel</button>
+      <button class="btn btn-primary" onclick="adminGiveCredits()">Give Credits</button>
+      <button class="btn btn-danger" onclick="adminSetCredits()">Set Balance</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let me = null;
+let status = null;
+let currentBidSlot = null;
+let adminTargetUser = null;
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+async function init() {
+  // Check URL
+  const path = window.location.pathname;
+  try {
+    const r = await fetch('/api/me');
+    if (r.ok) {
+      me = await r.json();
+      showLoggedIn();
+      if (path === '/dashboard' || path === '/') {
+        showPage('dashboard');
+        await refreshAll();
+      } else {
+        showPage('dashboard');
+        await refreshAll();
+      }
+    } else {
+      showPage('landing');
+    }
+  } catch {
+    showPage('landing');
+  }
+}
+
+function showLoggedIn() {
+  document.getElementById('nav-guest').style.display = 'none';
+  const nu = document.getElementById('nav-user');
+  nu.style.display = 'flex';
+  document.getElementById('nav-username').textContent = me.username;
+  document.getElementById('nav-credits').textContent = me.credits + ' CR';
+  if (me.avatar) {
+    document.getElementById('nav-avatar').src = `https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.png?size=64`;
+  } else {
+    document.getElementById('nav-avatar').src = `https://cdn.discordapp.com/embed/avatars/${parseInt(me.discriminator||0) % 5}.png`;
+  }
+  if (me.isAdmin) {
+    document.getElementById('tab-btn-admin').style.display = 'flex';
+    document.getElementById('admin-divider').style.display = 'block';
+  }
+}
+
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name)?.classList.add('active');
+  if (name === 'dashboard') history.pushState({}, '', '/dashboard');
+  else if (name === 'landing') history.pushState({}, '', '/');
+}
+
+function scrollToPricing() {
+  document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+}
+
+// ══════════════════════════════════════════════
+// SIDEBAR TABS
+// ══════════════════════════════════════════════
+function showTab(tab) {
+  document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-btn-' + tab)?.classList.add('active');
+  document.getElementById('panel-' + tab)?.classList.add('active');
+  if (tab === 'admin') loadAdminPanel();
+}
+
+// ══════════════════════════════════════════════
+// REFRESH
+// ══════════════════════════════════════════════
+async function refreshAll() {
+  try {
+    const [meR, stR] = await Promise.all([fetch('/api/me'), fetch('/api/status')]);
+    if (meR.ok) { me = await meR.json(); updateNavCredits(); }
+    if (stR.ok) { status = await stR.json(); }
+    renderOverview();
+    renderProPanel();
+    renderBidPanel();
+  } catch(e) { console.error(e); }
+}
+
+function updateNavCredits() {
+  document.getElementById('nav-credits').textContent = (me?.credits || 0) + ' CR';
+}
+
+// ══════════════════════════════════════════════
+// OVERVIEW
+// ══════════════════════════════════════════════
+function renderOverview() {
+  if (!me || !status) return;
+  document.getElementById('ov-credits').textContent = me.credits;
+  document.getElementById('transfer-balance').textContent = me.credits;
+  document.getElementById('pro-balance').textContent = me.credits;
+
+  // Pro slot
+  const proSlot = me.proSlot;
+  const proStatus = document.getElementById('ov-pro-status');
+  const proExpiry = document.getElementById('ov-pro-expiry');
+  if (proSlot) {
+    proStatus.innerHTML = '<span class="dot dot-green"></span> Active';
+    const left = proSlot.expiry - Date.now();
+    proExpiry.innerHTML = `<div class="expiry-text">Expires in ${formatTime(left)}</div>`;
+  } else {
+    proStatus.innerHTML = '<span class="dot dot-gray"></span> No active slot';
+    proExpiry.innerHTML = '';
+  }
+
+  // Bid slot
+  const bidSlot = me.bidSlot;
+  const bidStatus = document.getElementById('ov-bid-status');
+  const bidExpiry = document.getElementById('ov-bid-expiry');
+  if (bidSlot) {
+    bidStatus.innerHTML = '<span class="dot dot-yellow"></span> Active (won)';
+    const left = bidSlot.expiry - Date.now();
+    bidExpiry.innerHTML = `<div class="expiry-text">Expires in ${formatTime(left)}</div>`;
+  } else {
+    bidStatus.innerHTML = '<span class="dot dot-gray"></span> No active slot';
+    bidExpiry.innerHTML = '';
+  }
+
+  // Capacity bars
+  if (status.pro) {
+    const pct = (status.pro.active / status.pro.max) * 100;
+    document.getElementById('pro-capacity-bar').style.width = pct + '%';
+    document.getElementById('pro-capacity-text').textContent = `${status.pro.active}/${status.pro.max} slots${status.pro.paused?' · PAUSED':''}`;
+    if (status.pro.paused) document.getElementById('pro-capacity-bar').style.background = 'var(--danger)';
+  }
+
+  if (status.bid) {
+    const dotsEl = document.getElementById('bid-capacity-dots');
+    dotsEl.innerHTML = status.bid.map(b => {
+      const col = b.status === 'cooldown' ? 'dot-red' : b.status === 'live' ? 'dot-yellow' : 'dot-gray';
+      return `<div class="dot ${col}" title="Slot ${b.slotIndex}: ${b.status}"></div>`;
+    }).join('');
+  }
+}
+
+// ══════════════════════════════════════════════
+// PRO PANEL
+// ══════════════════════════════════════════════
+function renderProPanel() {
+  if (!me) return;
+  document.getElementById('pro-balance').textContent = me.credits;
+
+  const proSlot = me.proSlot;
+  const activeCard = document.getElementById('pro-active-card');
+  const inactiveCard = document.getElementById('pro-inactive-card');
+
+  if (proSlot) {
+    activeCard.style.display = 'block';
+    inactiveCard.style.display = 'none';
+    document.getElementById('pro-key-text').textContent = proSlot.key;
+    const pct = Math.max(0, Math.min(100, ((proSlot.expiry - Date.now()) / (proSlot.expiry - (proSlot.activatedAt || Date.now() - 3600000))) * 100));
+    document.getElementById('pro-expiry-bar').style.width = pct + '%';
+    document.getElementById('pro-expiry-text').textContent = 'Expires in ' + formatTime(proSlot.expiry - Date.now());
+  } else {
+    activeCard.style.display = 'none';
+    inactiveCard.style.display = 'block';
+  }
+
+  // History
+  const keys = me.proKeys || [];
+  if (keys.length > 0) {
+    document.getElementById('pro-history-card').style.display = 'block';
+    const tbody = document.querySelector('#pro-history-table tbody');
+    tbody.innerHTML = keys.map(k => `
+      <tr>
+        <td><span style="font-family:'DM Mono',monospace;font-size:.78rem;">${k.key?.slice(0,12)}…</span></td>
+        <td>${k.creditsSpent}cr</td>
+        <td>${timeAgo(k.activatedAt)}</td>
+        <td><span class="tag ${k.expiry > Date.now() ? 'tag-green' : 'tag-gray'}">${k.expiry > Date.now() ? 'Active' : 'Expired'}</span></td>
+      </tr>
+    `).join('');
+  }
+}
+
+document.getElementById('pro-credits-input')?.addEventListener('input', function() {
+  const v = parseInt(this.value);
+  const preview = document.getElementById('pro-hours-preview');
+  if (!v || v <= 0) { preview.textContent = 'Enter credits to see duration'; return; }
+  const hours = v / 8;
+  preview.innerHTML = `<span style="color:var(--yellow);">${v} credits</span> = <span style="color:var(--text);">${formatHours(hours)}</span>`;
+});
+
+async function activateProSlot() {
+  const credits = parseInt(document.getElementById('pro-credits-input').value);
+  if (!credits || credits <= 0) { toast('Enter a valid credit amount.', 'error'); return; }
+  const btn = document.getElementById('pro-activate-btn');
+  btn.disabled = true; btn.textContent = 'Activating…';
+  try {
+    const r = await fetch('/api/slot/pro/activate', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ credits })
+    });
+    const d = await r.json();
+    if (!r.ok) { toast(d.error, 'error'); return; }
+    toast(`✅ Pro slot activated! Key: ${d.key.slice(0,8)}…`, 'success');
+    await refreshAll();
+    renderProPanel();
+  } catch(e) { toast('Network error.', 'error'); }
+  finally { btn.disabled = false; btn.textContent = 'Activate Slot'; }
+}
+
+// ══════════════════════════════════════════════
+// BID PANEL
+// ══════════════════════════════════════════════
+function renderBidPanel() {
+  if (!status || !me) return;
+  const grid = document.getElementById('bid-slots-grid');
+  grid.innerHTML = (status.bid || []).map(b => {
+    const isCooldown = b.status === 'cooldown';
+    const isLive = b.status === 'live';
+    const isIdle = b.status === 'idle';
+    let timeStr = '—';
+    if (isLive && b.endsAt) timeStr = `<span class="timer" id="bid-timer-${b.slotIndex}">${formatTime(b.endsAt - Date.now())}</span>`;
+    if (isCooldown && b.cooldownUntil) timeStr = `<span style="color:var(--muted);font-size:.8rem;">Unlocks ${formatTime(b.cooldownUntil - Date.now())}</span>`;
+
+    const disabled = isCooldown || b.status === 'ended' || b.paused ? 'disabled' : '';
+    const statusTag = isCooldown
+      ? '<span class="tag tag-red">Occupied</span>'
+      : isLive ? '<span class="tag tag-yellow">Live</span>'
+      : b.paused ? '<span class="tag tag-red">Paused</span>'
+      : '<span class="tag tag-gray">Waiting</span>';
+
+    const topBidStr = b.topBid ? `<b>${b.topBid.amount} CR</b>` : 'No bids';
+
+    return `
+      <div class="bid-slot-card ${isCooldown ? 'cooldown' : isLive ? 'live' : ''}">
+        <div class="bid-slot-header">
+          <span class="bid-slot-title">Bid Slot ${b.slotIndex}</span>
+          ${statusTag}
+        </div>
+        <div class="bids-grid">
+          <div class="card" style="padding:.75rem;">
+            <div class="card-label">Top Bid</div>
+            <div style="font-size:1rem;margin-top:.25rem;">${topBidStr}</div>
+          </div>
+          <div class="card" style="padding:.75rem;">
+            <div class="card-label">Time Left</div>
+            <div style="font-size:1rem;margin-top:.25rem;">${timeStr}</div>
+          </div>
+        </div>
+        <div style="font-size:.78rem;color:var(--muted);margin-bottom:.75rem;">${b.bidCount} bid(s) · Prize: 2h flat</div>
+        <button class="btn btn-primary btn-sm" ${disabled} onclick="openBidModal(${b.slotIndex})">Place Bid</button>
+      </div>
+    `;
+  }).join('');
+
+  // Active bid key
+  const bidSlot = me.bidSlot;
+  const keyCard = document.getElementById('bid-key-card');
+  if (bidSlot) {
+    keyCard.style.display = 'block';
+    document.getElementById('bid-key-text').textContent = bidSlot.key;
+    document.getElementById('bid-expiry-text').textContent = 'Expires in ' + formatTime(bidSlot.expiry - Date.now());
+    document.getElementById('bid-expiry-bar').style.width = Math.max(0, Math.min(100, ((bidSlot.expiry - Date.now()) / (2 * 3600000)) * 100)) + '%';
+  } else {
+    keyCard.style.display = 'none';
+  }
+
+  // Start live timers
+  status.bid?.forEach(b => {
+    if (b.status === 'live' && b.endsAt) {
+      startBidTimer(b.slotIndex, b.endsAt);
+    }
+  });
+}
+
+const bidTimers = {};
+function startBidTimer(slotIndex, endsAt) {
+  if (bidTimers[slotIndex]) clearInterval(bidTimers[slotIndex]);
+  bidTimers[slotIndex] = setInterval(() => {
+    const el = document.getElementById(`bid-timer-${slotIndex}`);
+    if (!el) { clearInterval(bidTimers[slotIndex]); return; }
+    const left = endsAt - Date.now();
+    if (left <= 0) { clearInterval(bidTimers[slotIndex]); el.textContent = 'Ending…'; refreshAll(); return; }
+    el.textContent = formatTime(left);
+  }, 1000);
+}
+
+// ══════════════════════════════════════════════
+// BID MODAL
+// ══════════════════════════════════════════════
+function openBidModal(slotIndex) {
+  currentBidSlot = slotIndex;
+  const b = status.bid?.find(x => x.slotIndex === slotIndex);
+  const minBid = b?.topBid ? b.topBid.amount + 1 : 16;
+  document.getElementById('bid-modal-title').textContent = `Slot ${slotIndex}`;
+  document.getElementById('bid-modal-label').textContent = `Bid amount (min ${minBid} · balance: ${me.credits})`;
+  document.getElementById('bid-modal-info').textContent = 'Winner receives 2 hours flat. Your credits are held until auction ends.';
+  document.getElementById('bid-amount-input').value = minBid;
+  document.getElementById('bid-amount-input').min = minBid;
+  document.getElementById('bid-modal').classList.add('open');
+}
+function closeBidModal() { document.getElementById('bid-modal').classList.remove('open'); }
+
+async function submitBid() {
+  const amount = parseInt(document.getElementById('bid-amount-input').value);
+  if (!amount || amount < 16) { toast('Minimum bid is 16 credits.', 'error'); return; }
+  const btn = document.getElementById('bid-submit-btn');
+  btn.disabled = true; btn.textContent = 'Placing…';
+  try {
+    const r = await fetch('/api/bid/place', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ slotIndex: currentBidSlot, amount })
+    });
+    const d = await r.json();
+    if (!r.ok) { toast(d.error, 'error'); return; }
+    toast(d.isFirst ? '🔴 Auction started! 5 min on the clock.' : `✅ Bid of ${amount}CR placed!`, 'success');
+    closeBidModal();
+    await refreshAll();
+    renderBidPanel();
+  } catch { toast('Network error.', 'error'); }
+  finally { btn.disabled = false; btn.textContent = 'Place Bid'; }
+}
+
+// ══════════════════════════════════════════════
+// CREDITS / PAYMENT
+// ══════════════════════════════════════════════
+async function createPayment() {
+  const amount = parseInt(document.getElementById('buy-amount').value);
+  const coin = document.getElementById('buy-coin').value;
+  if (!amount || amount < 1) { toast('Minimum $1.', 'error'); return; }
+  const result = document.getElementById('payment-result');
+  result.style.display = 'none';
+  result.innerHTML = '<div style="text-align:center;padding:2rem;"><div class="loading-spin"></div></div>';
+  result.style.display = 'block';
+
+  try {
+    const r = await fetch('/api/payment/create', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ currency: coin, usdAmount: amount })
+    });
+    const d = await r.json();
+    if (!r.ok) { result.innerHTML = `<div class="card" style="color:var(--danger);">❌ ${d.error}</div>`; return; }
+
+    const coinLabel = (d.pay_currency || coin).toUpperCase();
+    const expTs = d.expiration_estimate_date ? Math.floor(new Date(d.expiration_estimate_date).getTime()/1000) : null;
+    result.innerHTML = `
+      <div class="card">
+        <div class="card-label">Invoice Created</div>
+        <div class="qr-box" style="margin-top:.75rem;">
+          ${d.qrDataUrl ? `<img src="${d.qrDataUrl}" width="160" height="160" alt="QR">` : ''}
+          <div>
+            <div style="font-size:.78rem;color:var(--muted);margin-bottom:.5rem;">Send exactly</div>
+            <div style="font-family:'DM Mono',monospace;font-size:1.3rem;color:var(--yellow);">${d.pay_amount} ${coinLabel}</div>
+            <div style="font-size:.78rem;color:var(--muted);margin-top:.25rem;">≈ $${amount} · ${amount} credits</div>
+          </div>
+        </div>
+        <div style="margin-top:.75rem;">
+          <div class="card-label">Address</div>
+          <div class="address-box" onclick="copyText('${d.pay_address}', this)">${d.pay_address}</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:.75rem;font-size:.78rem;color:var(--muted);">
+          <span>Payment ID: <code style="color:var(--text);">${d.payment_id}</code></span>
+          ${expTs ? `<span>Expires <span style="color:var(--yellow);">soon</span></span>` : ''}
+        </div>
+        <div style="margin-top:.75rem;padding:.75rem;background:var(--surface3);border-radius:8px;font-size:.78rem;color:var(--muted);">
+          ⚡ Credits are added automatically once your payment confirms. Do not close this page until sent.
+        </div>
+      </div>
+    `;
+  } catch(e) { result.innerHTML = `<div class="card" style="color:var(--danger);">❌ Network error.</div>`; }
+}
+
+// ══════════════════════════════════════════════
+// TRANSFER
+// ══════════════════════════════════════════════
+async function transferCredits() {
+  const targetId = document.getElementById('transfer-target').value.trim();
+  const amount = parseInt(document.getElementById('transfer-amount').value);
+  if (!targetId) { toast('Enter a Discord user ID.', 'error'); return; }
+  if (!amount || amount <= 0) { toast('Enter a valid amount.', 'error'); return; }
+  if (!confirm(`Send ${amount} credits to ${targetId}? This cannot be undone.`)) return;
+
+  try {
+    const r = await fetch('/api/credits/transfer', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ targetDiscordId: targetId, amount })
+    });
+    const d = await r.json();
+    if (!r.ok) { toast(d.error, 'error'); return; }
+    toast(`✅ Sent ${amount} credits! Remaining: ${d.creditsRemaining}`, 'success');
+    await refreshAll();
+    renderTransferHistory();
+  } catch { toast('Network error.', 'error'); }
+}
+
+function renderTransferHistory() {
+  const history = me?.transfers || [];
+  if (!history.length) return;
+  const card = document.getElementById('transfer-history-card');
+  const list = document.getElementById('transfer-history');
+  card.style.display = 'block';
+  list.innerHTML = history.map(t => `
+    <div class="transfer-item">
+      <span>→ ${t.to}</span>
+      <span style="color:var(--danger);font-family:'DM Mono',monospace;">-${t.amount} CR</span>
+      <span style="color:var(--muted);font-size:.72rem;">${timeAgo(t.at)}</span>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════════════
+// HWID RESET
+// ══════════════════════════════════════════════
+async function resetHWID(type) {
+  if (!confirm(`Reset HWID for your ${type.toUpperCase()} key? This will allow login from a new device.`)) return;
+  try {
+    const r = await fetch('/api/slot/reset-hwid', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type })
+    });
+    const d = await r.json();
+    if (!r.ok) { toast(d.error, 'error'); return; }
+    toast('✅ HWID reset! You can now login from a new device.', 'success');
+  } catch { toast('Network error.', 'error'); }
+}
+
+// ══════════════════════════════════════════════
+// ADMIN
+// ══════════════════════════════════════════════
+async function loadAdminPanel() {
+  try {
+    const r = await fetch('/api/admin/overview');
+    if (!r.ok) return;
+    const d = await r.json();
+
+    document.getElementById('admin-stats').innerHTML = `
+      <div class="admin-stat"><div class="val">${d.users.length}</div><div class="lbl">Total Users</div></div>
+      <div class="admin-stat"><div class="val">${d.slots.length}</div><div class="lbl">Active Slots</div></div>
+      <div class="admin-stat"><div class="val">${d.payments}</div><div class="lbl">Total Payments</div></div>
+      <div class="admin-stat" style="border-color:${d.pauseState.pro||d.pauseState.bid?'var(--danger)':'var(--border)'};">
+        <div class="val" style="color:${d.pauseState.pro||d.pauseState.bid?'var(--danger)':'var(--success)'};">${d.pauseState.pro||d.pauseState.bid?'PAUSED':'OPEN'}</div>
+        <div class="lbl">System Status</div>
+      </div>
+    `;
+
+    // Pause buttons
+    document.getElementById('pause-pro-btn').textContent = d.pauseState.pro ? '▶ Unpause Pro' : '⏸ Pause Pro';
+    document.getElementById('pause-bid-btn').textContent = d.pauseState.bid ? '▶ Unpause Bid' : '⏸ Pause Bid';
+    document.getElementById('pause-status').textContent = `Pro: ${d.pauseState.pro ? 'PAUSED' : 'Active'} · Bid: ${d.pauseState.bid ? 'PAUSED' : 'Active'}`;
+
+    // Users table
+    const tbody = document.querySelector('#admin-users-table tbody');
+    tbody.innerHTML = d.users.slice(0, 50).map(u => `
+      <tr>
+        <td><span style="font-weight:600;">${u.username || '—'}</span><br><span style="font-size:.7rem;color:var(--muted);">${u.id}</span></td>
+        <td><span style="font-family:'DM Mono',monospace;color:var(--yellow);">${u.credits}</span></td>
+        <td>${u.lastLogin ? timeAgo(u.lastLogin) : '—'}</td>
+        <td><button class="btn btn-ghost btn-sm" onclick="openGiveCredits('${u.id}','${u.username||''}',${u.credits})">Manage</button></td>
+      </tr>
+    `).join('');
+  } catch(e) { console.error(e); }
+}
+
+async function togglePause(type) {
+  const btn = document.getElementById(`pause-${type}-btn`);
+  const isPaused = btn.textContent.includes('Unpause');
+  try {
+    const r = await fetch('/api/admin/pause', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, paused: !isPaused })
+    });
+    const d = await r.json();
+    if (!r.ok) { toast('Error.', 'error'); return; }
+    toast(`${type.toUpperCase()} slots ${!isPaused ? 'paused' : 'unpaused'}.`, 'info');
+    loadAdminPanel();
+  } catch { toast('Network error.', 'error'); }
+}
+
+function openGiveCredits(id, username, credits) {
+  adminTargetUser = { id, username, credits };
+  document.getElementById('gcm-username').textContent = username || id;
+  document.getElementById('gcm-balance').textContent = credits + ' CR';
+  document.getElementById('gcm-amount').value = '';
+  document.getElementById('gcm-set-amount').value = '';
+  document.getElementById('give-credits-modal').classList.add('open');
+}
+
+async function adminGiveCredits() {
+  const amount = parseInt(document.getElementById('gcm-amount').value);
+  if (!amount || isNaN(amount)) { toast('Enter an amount.', 'error'); return; }
+  try {
+    const r = await fetch('/api/admin/give-credits', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: adminTargetUser.id, amount })
+    });
+    const d = await r.json();
+    if (!r.ok) { toast(d.error, 'error'); return; }
+    toast(`✅ Done! New balance: ${d.newBalance}`, 'success');
+    document.getElementById('give-credits-modal').classList.remove('open');
+    loadAdminPanel();
+  } catch { toast('Network error.', 'error'); }
+}
+
+async function adminSetCredits() {
+  const amount = parseInt(document.getElementById('gcm-set-amount').value);
+  if (isNaN(amount)) { toast('Enter a valid amount.', 'error'); return; }
+  if (!confirm(`Set ${adminTargetUser.username}'s balance to ${amount}?`)) return;
+  try {
+    const r = await fetch('/api/admin/set-credits', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: adminTargetUser.id, amount })
+    });
+    const d = await r.json();
+    if (!r.ok) { toast(d.error, 'error'); return; }
+    toast(`✅ Balance set to ${d.newBalance}.`, 'success');
+    document.getElementById('give-credits-modal').classList.remove('open');
+    loadAdminPanel();
+  } catch { toast('Network error.', 'error'); }
+}
+
+async function adminFindUser() {
+  const q = document.getElementById('admin-user-search').value.trim();
+  if (!q) return;
+  const r = await fetch(`/api/admin/find-user?query=${encodeURIComponent(q)}`);
+  const d = await r.json();
+  const el = document.getElementById('admin-user-results');
+  if (!d.length) { el.innerHTML = '<div style="color:var(--muted);font-size:.85rem;">No users found.</div>'; return; }
+  el.innerHTML = d.map(u => `
+    <div class="card" style="display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;margin-bottom:.5rem;">
+      <span><b>${u.username||'—'}</b> <span style="color:var(--muted);font-size:.78rem;">${u.id}</span></span>
+      <span style="font-family:'DM Mono',monospace;color:var(--yellow);">${u.credits} CR</span>
+      <button class="btn btn-ghost btn-sm" onclick="openGiveCredits('${u.id}','${u.username||''}',${u.credits})">Manage</button>
+    </div>
+  `).join('');
+}
+
+async function adminResetAuction(aId) {
+  if (!confirm(`Reset ${aId} and refund all bidders?`)) return;
+  const r = await fetch('/api/admin/reset-auction', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ auctionId: aId }) });
+  const d = await r.json();
+  toast(r.ok ? `✅ ${aId} reset.` : d.error, r.ok ? 'success' : 'error');
+  await refreshAll();
+}
+
+async function adminForceEnd(aId) {
+  if (!confirm(`Force-end ${aId}?`)) return;
+  const r = await fetch('/api/admin/force-end-auction', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ auctionId: aId }) });
+  const d = await r.json();
+  toast(r.ok ? `✅ Ending ${aId}…` : d.error, r.ok ? 'success' : 'error');
+}
+
+// ══════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════
+function copyKey(elemId) {
+  const el = document.getElementById(elemId);
+  const text = el.querySelector('span')?.textContent;
+  if (!text || text === '—') return;
+  navigator.clipboard.writeText(text).then(() => {
+    el.classList.add('copied');
+    setTimeout(() => el.classList.remove('copied'), 1500);
+    toast('Key copied!', 'success');
+  });
+}
+
+function copyText(text, el) {
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = el.style.borderColor;
+    el.style.borderColor = 'var(--success)';
+    setTimeout(() => el.style.borderColor = orig, 1200);
+    toast('Copied!', 'success');
+  });
+}
+
+function formatTime(ms) {
+  if (ms <= 0) return '0s';
+  const h = Math.floor(ms / 3600000);
+  const m = Math.floor((ms % 3600000) / 60000);
+  const s = Math.floor((ms % 60000) / 1000);
+  if (h > 0) return `${h}h ${m}m`;
+  if (m > 0) return `${m}m ${s}s`;
+  return `${s}s`;
+}
+
+function formatHours(h) {
+  if (h >= 1) return `${h.toFixed(h % 1 === 0 ? 0 : 1)} hour${h !== 1 ? 's' : ''}`;
+  return `${Math.round(h * 60)} min`;
+}
+
+function timeAgo(ts) {
+  if (!ts) return '—';
+  const diff = Date.now() - ts;
+  if (diff < 60000) return 'just now';
+  if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+  if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+  return `${Math.floor(diff / 86400000)}d ago`;
+}
+
+let toastTimer;
+function toast(msg, type = 'info') {
+  const container = document.getElementById('toast');
+  const el = document.createElement('div');
+  el.className = `toast-item ${type}`;
+  el.textContent = msg;
+  container.appendChild(el);
+  setTimeout(() => el.remove(), 4000);
+}
+
+// Auto-refresh every 15s
+setInterval(refreshAll, 15000);
+
+// Init
+init();
+</script>
+</body>
+</html>
