@@ -171,9 +171,8 @@ async function createLuarmorKey(hours, discordId, username, projectId) {
 
   const LOADER_HASH = 'a956818a26401a68387b022f2525679a';
 
-  const loadstring =
-    `script_key="${rawKey}";` +
-    `loadstring(game:HttpGet("https://api.luarmor.net/files/v4/loaders/${LOADER_HASH}.lua"))()`;
+  const loadstring = `script_key="${rawKey}";
+loadstring(game:HttpGet("https://api.luarmor.net/files/v4/loaders/${LOADER_HASH}.lua"))()`;
 
   return {
     key:    loadstring,   // full loadstring for the user to paste
