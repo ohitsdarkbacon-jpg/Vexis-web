@@ -127,7 +127,7 @@ async function createLuarmorKey(hours, discordId, username, projectId) {
   const res = await axios.post(
     `https://api.luarmor.net/v3/projects/${projectId}/users`,
     { discord_id: discordId, identifier, auth_expire: expiryUnix, note: `${username} (${discordId})` },
-    { headers: { Authorization: LUARMOR_API_KEY, 'Content-Type': 'application/json' } }
+    { headers: { Authorization: `Bearer ${LUARMOR_API_KEY}`, 'Content-Type': 'application/json' } }
   );
   const findKey = obj => {
     if (typeof obj === 'string' && /^[A-Za-z0-9]{6,}$/.test(obj)) return obj;
@@ -151,7 +151,7 @@ async function resetLuarmorHWID(userId, projectId) {
   await axios.patch(
     `https://api.luarmor.net/v3/projects/${projectId}/users`,
     { identifier, reset_hwid: true },
-    { headers: { Authorization: LUARMOR_API_KEY, 'Content-Type': 'application/json' } }
+    { headers: { Authorization: `Bearer ${LUARMOR_API_KEY}`, 'Content-Type': 'application/json' } }
   );
 }
 
