@@ -183,11 +183,15 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v4/loaders/${LOADER_HASH}
 
 // ===== HWID RESET =====
 // Uses the rawKey (short Luarmor key) — NOT the identifier or full loadstring.
-async function resetLuarmorHWID(rawKey, projectId) {
+async function resetLuarmorHWID(rawKey, projectId, userId, username) {
   try {
-    await axios.patch(
+    const identifier = getUserIdentifier(userId, username);
+
+    // Try reset by identifier first (primary Luarmor v3 method)
+    const res = await axios.patch(
       `https://api.luarmor.net/v3/projects/${projectId}/users`,
       {
+        identifier,
         user_key:   rawKey,
         reset_hwid: true
       },
@@ -198,10 +202,11 @@ async function resetLuarmorHWID(rawKey, projectId) {
         }
       }
     );
+    console.log('Luarmor HWID reset response:', JSON.stringify(res.data, null, 2));
     return true;
   } catch (err) {
     console.error('Luarmor HWID reset failed:', err.response?.data || err.message);
-    throw new Error('Failed to reset HWID');
+    throw new Error(err.response?.data?.message || 'Failed to reset HWID');
   }
 }
 
@@ -511,7 +516,7 @@ app.post('/api/slot/reset-hwid', requireAuth, async (req, res) => {
   }
 
   try {
-    await resetLuarmorHWID(slot.rawKey, projectId);
+    await resetLuarmorHWID(slot.rawKey, projectId, id, req.session.user.username);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
