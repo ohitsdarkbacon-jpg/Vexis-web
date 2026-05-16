@@ -513,6 +513,36 @@ select option{background:var(--surface2);}
   .hero-cta .btn{width:100%;max-width:280px;justify-content:center;}
 }
 @media(hover:none){body{cursor:auto;}#cursor{display:none;}}
+/* Fix sharp corners from glow effects */
+.hero-preview,
+.slot-display-card,
+.plan-card,
+.modal {
+  overflow: hidden;
+  border-radius: var(--r3);
+}
+
+.hero-preview::before,
+.hero-preview::after,
+.slot-display-card::before,
+.plan-card::before {
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.hero-preview-inner,
+.slot-display-card .slot-dots-wrap,
+.modal .qr-card {
+  border-radius: var(--r2);
+  overflow: hidden;
+}
+
+.backdrop-blur,
+.hero-preview-inner,
+.slot-display-card,
+.plan-card {
+  isolation: isolate;
+}
 </style>
 </head>
 <body>
