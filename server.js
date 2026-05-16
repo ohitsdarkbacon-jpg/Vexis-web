@@ -15,15 +15,15 @@ const PORT = process.env.PORT || 3000;
 const DATA_DIR = process.env.DATA_DIR || './data';
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
-const fp        = f => path.join(DATA_DIR, f);
+const fp = f => path.join(DATA_DIR, f);
 const readJSON  = (file, def) => { try { return JSON.parse(fs.readFileSync(fp(file))); } catch { return def; } };
 const writeJSON = (file, data) => fs.writeFileSync(fp(file), JSON.stringify(data, null, 2));
 
-let users      = readJSON('users.json',    {});
-let slots      = readJSON('slots.json',    []);
-let auctions   = readJSON('auctions.json', {});
-let payments   = readJSON('payments.json', {});
-let pauseState = readJSON('pause.json',    { pro: false, bid: false });
+let users      = readJSON('users.json',      {});
+let slots      = readJSON('slots.json',      []);
+let auctions   = readJSON('auctions.json',   {});
+let payments   = readJSON('payments.json',   {});
+let pauseState = readJSON('pause.json',      { pro: false, bid: false });
 
 const saveUsers    = () => writeJSON('users.json',    users);
 const saveSlots    = () => writeJSON('slots.json',    slots);
@@ -32,35 +32,35 @@ const savePayments = () => writeJSON('payments.json', payments);
 const savePause    = () => writeJSON('pause.json',    pauseState);
 
 // ===== CONFIG =====
-const DISCORD_CLIENT_ID      = process.env.DISCORD_CLIENT_ID;
-const DISCORD_CLIENT_SECRET  = process.env.DISCORD_CLIENT_SECRET;
-const DISCORD_BOT_TOKEN      = process.env.DISCORD_BOT_TOKEN;
-const DISCORD_GUILD_ID       = process.env.DISCORD_GUILD_ID;
-const BASE_URL               = process.env.BASE_URL || `http://localhost:${PORT}`;
-const SESSION_SECRET         = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
-const ADMIN_IDS              = (process.env.ADMIN_IDS || '').split(',').map(s => s.trim()).filter(Boolean);
-const NOWPAYMENTS_API_KEY    = process.env.NOWPAYMENTS_API_KEY;
-const NOWPAYMENTS_IPN_SECRET = process.env.NOWPAYMENTS_IPN_SECRET;
-const LUARMOR_API_KEY        = process.env.LUARMOR_API_KEY;
-const LUARMOR_PROJECT_PRO    = process.env.LUARMOR_PROJECT_ID_PRO;
-const LUARMOR_PROJECT_BID    = process.env.LUARMOR_PROJECT_ID_BID;
+const DISCORD_CLIENT_ID     = process.env.DISCORD_CLIENT_ID;
+const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
+const DISCORD_BOT_TOKEN     = process.env.DISCORD_BOT_TOKEN;
+const DISCORD_GUILD_ID      = process.env.DISCORD_GUILD_ID;
+const BASE_URL              = process.env.BASE_URL || `http://localhost:${PORT}`;
+const SESSION_SECRET        = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
+const ADMIN_IDS             = (process.env.ADMIN_IDS || '').split(',').map(s => s.trim()).filter(Boolean);
+const NOWPAYMENTS_API_KEY   = process.env.NOWPAYMENTS_API_KEY;
+const NOWPAYMENTS_IPN_SECRET= process.env.NOWPAYMENTS_IPN_SECRET;
+const LUARMOR_API_KEY       = process.env.LUARMOR_API_KEY;
+const LUARMOR_PROJECT_PRO   = process.env.LUARMOR_PROJECT_ID_PRO;   // Pro tier
+const LUARMOR_PROJECT_BID   = process.env.LUARMOR_PROJECT_ID_BID;   // Bid tier
 
 const PRO_CONFIG = {
-  name:          'Pro',
-  pricePerHour:  8,
-  maxSlots:      6,
-  creditToHours: (c) => c / 8,
-  projectId:     LUARMOR_PROJECT_PRO,
+  name:           'Pro',
+  pricePerHour:   8,      // $8/hr => 8 credits/hr
+  maxSlots:       6,
+  creditToHours:  (c) => c / 8,
+  projectId:      LUARMOR_PROJECT_PRO,
 };
 
 const BID_CONFIG = {
-  name:        'Bid',
-  minBid:      16,
-  prizeHours:  2,
-  maxSlots:    2,
-  durationMins:5,
-  cooldownMs:  2 * 60 * 60 * 1000,
-  projectId:   LUARMOR_PROJECT_BID,
+  name:           'Bid',
+  minBid:         16,     // $16 minimum
+  prizeHours:     2,      // always 2hr flat
+  maxSlots:       2,
+  durationMins:   5,
+  cooldownMs:     2 * 60 * 60 * 1000,
+  projectId:      LUARMOR_PROJECT_BID,
 };
 
 // ===== MIDDLEWARE =====
@@ -71,15 +71,14 @@ app.use(session({
   secret:            SESSION_SECRET,
   resave:            false,
   saveUninitialized: false,
-  cookie:            { secure: false, maxAge: 7 * 24 * 60 * 60 * 1000 },
+  cookie:            { secure: false, maxAge: 7 * 24 * 60 * 60 * 1000 }
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ===== HELPERS =====
 function ensureUser(userId) {
   if (!users[userId]) users[userId] = { credits: 0, processed: [], pausedSlots: [] };
-  if (!users[userId].processed)   users[userId].processed   = [];
-  if (!users[userId].pausedSlots) users[userId].pausedSlots = [];
+  if (!users[userId].processed) users[userId].processed = [];
   return users[userId];
 }
 
@@ -92,7 +91,7 @@ function getActiveProSlots() {
 }
 
 function formatTime(ms) {
-  if (ms <= 0) return '0s';
+  if (ms <= 0) return '0m';
   const h = Math.floor(ms / 3600000);
   const m = Math.floor((ms % 3600000) / 60000);
   const s = Math.floor((ms % 60000) / 1000);
@@ -123,11 +122,6 @@ function isBidSlotOnCooldown(slotIndex) {
   return a?.cooldownUntil && a.cooldownUntil > Date.now();
 }
 
-// Build the Luarmor loadstring from a key
-function buildLoadstring(key) {
-  return `loadstring(game:HttpGet("https://luarmor.net/fetch?key=${key}"))()`;
-}
-
 async function createLuarmorKey(hours, discordId, username, projectId) {
   const expiryUnix = Math.floor(Date.now() / 1000) + Math.floor(hours * 3600);
   const identifier = getUserIdentifier(discordId, username);
@@ -145,7 +139,7 @@ async function createLuarmorKey(hours, discordId, username, projectId) {
   };
   const key = findKey(res.data);
   if (!key) throw new Error('No key in Luarmor response');
-  return { key, loadstring: buildLoadstring(key), expiry: expiryUnix * 1000 };
+  return { key, expiry: expiryUnix * 1000 };
 }
 
 async function resetLuarmorHWID(userId, projectId) {
@@ -256,13 +250,13 @@ async function endAuction(auctionId) {
 
   ensureUser(topBid.userId);
 
-  let key, loadstring, expiry;
+  let key, expiry;
   try {
     const { data: u } = await axios.get(`https://discord.com/api/v10/users/${topBid.userId}`, {
-      headers: { Authorization: `Bot ${DISCORD_BOT_TOKEN}` },
+      headers: { Authorization: `Bot ${DISCORD_BOT_TOKEN}` }
     }).catch(() => ({ data: { username: topBid.userId } }));
     const result = await createLuarmorKey(BID_CONFIG.prizeHours, topBid.userId, u.username || topBid.userId, BID_CONFIG.projectId);
-    key = result.key; loadstring = result.loadstring; expiry = result.expiry;
+    key = result.key; expiry = result.expiry;
   } catch (err) {
     console.error('Key gen failed for', auctionId, err.message);
     users[topBid.userId].credits += topBid.amount;
@@ -276,12 +270,13 @@ async function endAuction(auctionId) {
   saveAuctions();
 
   slots = slots.filter(s => !(s.userId === topBid.userId && s.type === 'bid'));
-  slots.push({ userId: topBid.userId, key, loadstring, expiry, type: 'bid', auctionId, projectId: BID_CONFIG.projectId });
+  slots.push({ userId: topBid.userId, key, expiry, type: 'bid', auctionId, projectId: BID_CONFIG.projectId });
   saveSlots();
 
+  // Store key for dashboard
   ensureUser(topBid.userId);
   if (!users[topBid.userId].bidKeys) users[topBid.userId].bidKeys = [];
-  users[topBid.userId].bidKeys.unshift({ key, loadstring, expiry, auctionId, wonAt: Date.now() });
+  users[topBid.userId].bidKeys.unshift({ key, expiry, auctionId, wonAt: Date.now() });
   users[topBid.userId].bidKeys = users[topBid.userId].bidKeys.slice(0, 5);
   saveUsers();
 
@@ -317,15 +312,15 @@ app.get('/auth/discord/callback', async (req, res) => {
 
     const { access_token } = tokenRes.data;
     const userRes = await axios.get('https://discord.com/api/v10/users/@me', {
-      headers: { Authorization: `Bearer ${access_token}` },
+      headers: { Authorization: `Bearer ${access_token}` }
     });
 
     const { id, username, avatar, discriminator } = userRes.data;
     ensureUser(id);
-    users[id].username      = username;
-    users[id].discriminator = discriminator;
-    users[id].avatar        = avatar;
-    users[id].lastLogin     = Date.now();
+    users[id].username     = username;
+    users[id].discriminator= discriminator;
+    users[id].avatar       = avatar;
+    users[id].lastLogin    = Date.now();
     saveUsers();
 
     req.session.user = { id, username, avatar, discriminator };
@@ -347,8 +342,7 @@ function requireAuth(req, res, next) {
   next();
 }
 function requireAdmin(req, res, next) {
-  if (!req.session?.user || !ADMIN_IDS.includes(req.session.user.id))
-    return res.status(403).json({ error: 'Forbidden' });
+  if (!req.session?.user || !ADMIN_IDS.includes(req.session.user.id)) return res.status(403).json({ error: 'Forbidden' });
   next();
 }
 
@@ -356,109 +350,76 @@ function requireAdmin(req, res, next) {
 app.get('/api/me', requireAuth, (req, res) => {
   const { id } = req.session.user;
   ensureUser(id);
-  const u       = users[id];
-  const proSlot = slots.find(s => s.userId === id && s.type === 'pro' && s.expiry > Date.now()) || null;
-  const bidSlot = slots.find(s => s.userId === id && s.type === 'bid' && s.expiry > Date.now()) || null;
-
-  // Always attach loadstring on the fly in case old records lack it
-  if (proSlot && !proSlot.loadstring) proSlot.loadstring = buildLoadstring(proSlot.key);
-  if (bidSlot && !bidSlot.loadstring) bidSlot.loadstring = buildLoadstring(bidSlot.key);
-
-  const bidKeys = (u.bidKeys || []).map(k => ({
-    ...k,
-    loadstring: k.loadstring || buildLoadstring(k.key),
-  }));
-  const proKeys = (u.proKeys || []).map(k => ({
-    ...k,
-    loadstring: k.loadstring || buildLoadstring(k.key),
-  }));
-
+  const u = users[id];
   res.json({
     ...req.session.user,
-    credits: u.credits,
-    isAdmin: ADMIN_IDS.includes(id),
-    proSlot,
-    bidSlot,
-    bidKeys,
-    proKeys,
+    credits:   u.credits,
+    isAdmin:   ADMIN_IDS.includes(id),
+    proSlot:   slots.find(s => s.userId === id && s.type === 'pro' && s.expiry > Date.now()) || null,
+    bidSlot:   slots.find(s => s.userId === id && s.type === 'bid' && s.expiry > Date.now()) || null,
+    bidKeys:   u.bidKeys || [],
   });
 });
 
 // ===== API: STATUS =====
 app.get('/api/status', (req, res) => {
-  const now      = Date.now();
+  const now = Date.now();
   const proSlots = slots.filter(s => s?.type === 'pro' && s.expiry > now);
 
-  // Find next slot expiry for "next free" info
-  const nextExpiry = proSlots.length >= PRO_CONFIG.maxSlots
-    ? Math.min(...proSlots.map(s => s.expiry))
-    : null;
-
   const bidStatus = [1, 2].map(i => {
-    const aId        = getAuctionId(i);
-    const a          = auctions[aId] || {};
+    const aId = getAuctionId(i);
+    const a   = auctions[aId] || {};
     const onCooldown = isBidSlotOnCooldown(i);
-    const topBid     = getTopBid(a);
+    const topBid = getTopBid(a);
     return {
-      slotIndex:     i,
-      auctionId:     aId,
-      status:        onCooldown ? 'cooldown' : (a.status || 'idle'),
-      cooldownUntil: a.cooldownUntil || null,
-      endsAt:        a.endsAt || null,
-      lastWinner:    a.lastWinner || null,
-      topBid:        topBid ? { amount: topBid.amount, userId: topBid.userId } : null,
-      bidCount:      (a.bids || []).length,
-      paused:        pauseState.bid,
+      slotIndex:    i,
+      auctionId:    aId,
+      status:       onCooldown ? 'cooldown' : (a.status || 'idle'),
+      cooldownUntil:a.cooldownUntil || null,
+      endsAt:       a.endsAt || null,
+      lastWinner:   a.lastWinner || null,
+      topBid:       topBid ? { amount: topBid.amount, userId: topBid.userId } : null,
+      bidCount:     (a.bids || []).length,
+      paused:       pauseState.bid,
     };
   });
 
   res.json({
     pro: {
-      active:      proSlots.length,
-      max:         PRO_CONFIG.maxSlots,
-      available:   proSlots.length < PRO_CONFIG.maxSlots,
-      paused:      pauseState.pro,
-      nextFreeIn:  nextExpiry ? nextExpiry - now : null,
-      slots:       proSlots.map(s => ({ userId: s.userId, expiry: s.expiry })),
+      active:    proSlots.length,
+      max:       PRO_CONFIG.maxSlots,
+      available: proSlots.length < PRO_CONFIG.maxSlots,
+      paused:    pauseState.pro,
+      slots:     proSlots.map(s => ({ userId: s.userId, expiry: s.expiry })),
     },
-    bid:    bidStatus,
-    paused: pauseState,
+    bid:     bidStatus,
+    paused:  pauseState,
   });
 });
 
 // ===== API: ACTIVATE PRO SLOT =====
 app.post('/api/slot/pro/activate', requireAuth, async (req, res) => {
   const { id, username } = req.session.user;
-  const { credits }      = req.body;
+  const { credits } = req.body;
   ensureUser(id);
 
   if (pauseState.pro) return res.status(400).json({ error: 'Pro slots are currently paused by admin.' });
 
-  const creditsNum = parseInt(credits);
-  if (!creditsNum || creditsNum <= 0) return res.status(400).json({ error: 'Invalid credits amount.' });
-  if (creditsNum % 8 !== 0)          return res.status(400).json({ error: 'Only full hours (multiples of 8 credits).' });
-  if (creditsNum > users[id].credits) return res.status(400).json({ error: 'Insufficient credits.' });
-
-  // Check slot capacity
-  const activeProSlots = getActiveProSlots();
-  if (activeProSlots.length >= PRO_CONFIG.maxSlots)
-    return res.status(400).json({ error: 'All Pro slots are currently full. Try again later.' });
-
-  const hours = creditsNum / 8;
-
+const creditsNum = parseInt(credits);
+if (!creditsNum || creditsNum <= 0) return res.status(400).json({ error: 'Invalid credits amount.' });
+if (creditsNum % 8 !== 0) return res.status(400).json({ error: 'Only full hours (multiples of 8 credits).' });
+if (creditsNum > users[id].credits) return res.status(400).json({ error: 'Insufficient credits.' });
+const hours = creditsNum / 8;   // ← only one declaration
   try {
-    const { key, loadstring, expiry } = await createLuarmorKey(hours, id, username, PRO_CONFIG.projectId);
-
+    const { key, expiry } = await createLuarmorKey(hours, id, username, PRO_CONFIG.projectId);
     slots = slots.filter(s => !(s.userId === id && s.type === 'pro'));
-    slots.push({ userId: id, key, loadstring, expiry, type: 'pro', projectId: PRO_CONFIG.projectId, activatedAt: Date.now() });
-
+    slots.push({ userId: id, key, expiry, type: 'pro', projectId: PRO_CONFIG.projectId, activatedAt: Date.now() });
     users[id].credits -= creditsNum;
     if (!users[id].proKeys) users[id].proKeys = [];
-    users[id].proKeys.unshift({ key, loadstring, expiry, creditsSpent: creditsNum, activatedAt: Date.now() });
+    users[id].proKeys.unshift({ key, expiry, creditsSpent: creditsNum, activatedAt: Date.now() });
     users[id].proKeys = users[id].proKeys.slice(0, 10);
-
     saveUsers(); saveSlots();
-    res.json({ success: true, key, loadstring, expiry, hours, creditsSpent: creditsNum, creditsRemaining: users[id].credits });
+    res.json({ success: true, key, expiry, hours, creditsSpent: creditsNum, creditsRemaining: users[id].credits });
   } catch (err) {
     console.error('Pro activate error:', err.message);
     res.status(500).json({ error: `Luarmor error: ${err.message}` });
@@ -467,9 +428,8 @@ app.post('/api/slot/pro/activate', requireAuth, async (req, res) => {
 
 // ===== API: RESET HWID =====
 app.post('/api/slot/reset-hwid', requireAuth, async (req, res) => {
-  const { id }    = req.session.user;
-  const { type }  = req.body;
-  if (!['pro', 'bid'].includes(type)) return res.status(400).json({ error: 'Invalid type.' });
+  const { id } = req.session.user;
+  const { type } = req.body;
   const projectId = type === 'pro' ? PRO_CONFIG.projectId : BID_CONFIG.projectId;
   try {
     await resetLuarmorHWID(id, projectId);
@@ -481,19 +441,23 @@ app.post('/api/slot/reset-hwid', requireAuth, async (req, res) => {
 
 // ===== API: TRANSFER CREDITS =====
 app.post('/api/credits/transfer', requireAuth, async (req, res) => {
-  const { id }                       = req.session.user;
-  const { targetDiscordId, amount }  = req.body;
+  const { id } = req.session.user;
+  const { targetDiscordId, amount } = req.body;
   ensureUser(id);
 
   const amountNum = parseInt(amount);
-  if (!amountNum || amountNum <= 0)   return res.status(400).json({ error: 'Invalid amount.' });
-  if (amountNum > users[id].credits)  return res.status(400).json({ error: 'Insufficient credits.' });
-  if (targetDiscordId === id)          return res.status(400).json({ error: 'Cannot transfer to yourself.' });
-  if (!users[targetDiscordId])         return res.status(404).json({ error: 'User not found. They must have logged in before.' });
+  if (!amountNum || amountNum <= 0) return res.status(400).json({ error: 'Invalid amount.' });
+  if (amountNum > users[id].credits) return res.status(400).json({ error: 'Insufficient credits.' });
+  if (targetDiscordId === id) return res.status(400).json({ error: 'Cannot transfer to yourself.' });
 
-  users[id].credits             -= amountNum;
+  // Validate target exists
+  if (!users[targetDiscordId]) return res.status(404).json({ error: 'User not found. They must have logged in before.' });
+
+  users[id].credits        -= amountNum;
   users[targetDiscordId].credits += amountNum;
+  saveUsers();
 
+  // Log transfer
   if (!users[id].transfers) users[id].transfers = [];
   users[id].transfers.unshift({ to: targetDiscordId, amount: amountNum, at: Date.now() });
   users[id].transfers = users[id].transfers.slice(0, 20);
@@ -504,7 +468,7 @@ app.post('/api/credits/transfer', requireAuth, async (req, res) => {
 
 // ===== API: BUY CRYPTO =====
 app.post('/api/payment/create', requireAuth, async (req, res) => {
-  const { id }               = req.session.user;
+  const { id } = req.session.user;
   const { currency, usdAmount } = req.body;
   const amt = parseInt(usdAmount);
   if (!amt || amt < 1) return res.status(400).json({ error: 'Minimum $1.' });
@@ -516,13 +480,9 @@ app.post('/api/payment/create', requireAuth, async (req, res) => {
     if (!payment_id || !pay_address) return res.status(500).json({ error: 'Incomplete NowPayments response.' });
 
     payments[payment_id] = {
-      userId:    id,
-      usdAmount: amt,
-      currency:  pay_currency || currency,
-      payAmount: pay_amount,
-      payAddress:pay_address,
-      status:    'waiting',
-      createdAt: Date.now(),
+      userId: id, usdAmount: amt, currency: pay_currency || currency,
+      payAmount: pay_amount, payAddress: pay_address,
+      status: 'waiting', createdAt: Date.now(),
       expiresAt: expiration_estimate_date ? new Date(expiration_estimate_date).getTime() : null,
     };
     savePayments();
@@ -538,37 +498,32 @@ app.post('/api/payment/create', requireAuth, async (req, res) => {
 
 // ===== API: PLACE BID =====
 app.post('/api/bid/place', requireAuth, async (req, res) => {
-  const { id }             = req.session.user;
+  const { id } = req.session.user;
   const { slotIndex, amount } = req.body;
   const idx = parseInt(slotIndex);
   if (![1, 2].includes(idx)) return res.status(400).json({ error: 'Invalid slot.' });
-  if (pauseState.bid)        return res.status(400).json({ error: 'Bid slots are paused by admin.' });
+  if (pauseState.bid) return res.status(400).json({ error: 'Bid slots are paused by admin.' });
 
   ensureUser(id);
   ensureAuction(idx);
-  const aId     = getAuctionId(idx);
+  const aId    = getAuctionId(idx);
   const auction = auctions[aId];
 
-  if (isBidSlotOnCooldown(idx))
-    return res.status(400).json({ error: `Slot occupied. Unlocks in ${formatTime(auction.cooldownUntil - Date.now())}` });
-  if (auction.status === 'ended')
-    return res.status(400).json({ error: 'Auction just ended.' });
+  if (isBidSlotOnCooldown(idx)) return res.status(400).json({ error: `Slot occupied. Unlocks in ${formatTime(auction.cooldownUntil - Date.now())}` });
+  if (auction.status === 'ended') return res.status(400).json({ error: 'Auction just ended.' });
 
   const bidAmt = parseInt(amount);
-  if (isNaN(bidAmt) || bidAmt < BID_CONFIG.minBid)
-    return res.status(400).json({ error: `Minimum bid is ${BID_CONFIG.minBid} credits.` });
+  if (isNaN(bidAmt) || bidAmt < BID_CONFIG.minBid) return res.status(400).json({ error: `Minimum bid is ${BID_CONFIG.minBid} credits.` });
 
-  const topBid = getTopBid(auction);
-  const minBid = topBid ? topBid.amount + 1 : BID_CONFIG.minBid;
-  if (bidAmt < minBid)
-    return res.status(400).json({ error: `Minimum bid is ${minBid} credits.` });
+  const topBid      = getTopBid(auction);
+  const minBid      = topBid ? topBid.amount + 1 : BID_CONFIG.minBid;
+  if (bidAmt < minBid) return res.status(400).json({ error: `Minimum bid is ${minBid} credits.` });
 
   const existingBid    = auction.bids.find(b => b.userId === id);
   const existingAmount = existingBid ? existingBid.amount : 0;
   const additionalCost = bidAmt - existingAmount;
 
-  if (additionalCost > users[id].credits)
-    return res.status(400).json({ error: `Need ${additionalCost} more credits (have ${users[id].credits}).` });
+  if (additionalCost > users[id].credits) return res.status(400).json({ error: `Need ${additionalCost} more credits (have ${users[id].credits}).` });
 
   users[id].credits -= additionalCost;
   if (existingBid) existingBid.amount = bidAmt;
@@ -595,7 +550,7 @@ app.post('/api/bid/place', requireAuth, async (req, res) => {
 // ===== API: ADMIN =====
 app.get('/api/admin/overview', requireAdmin, (req, res) => {
   const allUsers = Object.entries(users).map(([id, u]) => ({
-    id, username: u.username, credits: u.credits, lastLogin: u.lastLogin,
+    id, username: u.username, credits: u.credits, lastLogin: u.lastLogin
   })).sort((a, b) => (b.lastLogin || 0) - (a.lastLogin || 0));
 
   const allSlots = slots.filter(s => s.expiry > Date.now());
@@ -605,7 +560,7 @@ app.get('/api/admin/overview', requireAdmin, (req, res) => {
 app.post('/api/admin/give-credits', requireAdmin, (req, res) => {
   const { userId, amount } = req.body;
   const amt = parseInt(amount);
-  if (!userId || isNaN(amt)) return res.status(400).json({ error: 'userId and amount required.' });
+  if (!userId || !amt) return res.status(400).json({ error: 'userId and amount required.' });
   ensureUser(userId);
   users[userId].credits += amt;
   saveUsers();
@@ -624,7 +579,7 @@ app.post('/api/admin/set-credits', requireAdmin, (req, res) => {
 
 app.post('/api/admin/pause', requireAdmin, (req, res) => {
   const { type, paused } = req.body;
-  if (type === 'pro')      pauseState.pro = !!paused;
+  if (type === 'pro') pauseState.pro = !!paused;
   else if (type === 'bid') pauseState.bid = !!paused;
   savePause();
   res.json({ success: true, pauseState });
@@ -657,9 +612,9 @@ app.post('/api/admin/force-end-auction', requireAdmin, async (req, res) => {
   res.json({ success: true });
 });
 
+// Lookup user by Discord ID or username for admin
 app.get('/api/admin/find-user', requireAdmin, (req, res) => {
   const { query } = req.query;
-  if (!query) return res.json([]);
   const results = Object.entries(users)
     .filter(([id, u]) => id.includes(query) || (u.username || '').toLowerCase().includes(query.toLowerCase()))
     .map(([id, u]) => ({ id, username: u.username, credits: u.credits }));
@@ -689,18 +644,14 @@ app.post('/webhook/nowpayments', express.raw({ type: '*/*' }), async (req, res) 
   }
 });
 
-// ===== POLLING: PAYMENT STATUS =====
+// ===== POLLING =====
 setInterval(async () => {
   const pending = Object.entries(payments).filter(([, p]) => p.status === 'waiting');
   for (const [pid, rec] of pending) {
     if (Date.now() - rec.createdAt < 2 * 60000) continue;
-    if (Date.now() - rec.createdAt > 90 * 60000) {
-      payments[pid].status = 'expired'; savePayments(); continue;
-    }
+    if (Date.now() - rec.createdAt > 90 * 60000) { payments[pid].status = 'expired'; savePayments(); continue; }
     try {
-      const { data } = await axios.get(`https://api.nowpayments.io/v1/payment/${pid}`, {
-        headers: { 'x-api-key': NOWPAYMENTS_API_KEY },
-      });
+      const { data } = await axios.get(`https://api.nowpayments.io/v1/payment/${pid}`, { headers: { 'x-api-key': NOWPAYMENTS_API_KEY } });
       if (['finished', 'confirmed', 'partially_paid'].includes(data.payment_status)) {
         await deliverCredits(pid, data.payment_status, data.actually_paid, data.pay_currency);
       } else if (['failed', 'refunded', 'expired'].includes(data.payment_status)) {
@@ -711,19 +662,17 @@ setInterval(async () => {
   }
 }, 2 * 60000);
 
-// ===== POLLING: EXPIRE SLOTS =====
 setInterval(() => {
   const before = slots.length;
   slots = slots.filter(s => s?.expiry > Date.now());
   if (slots.length !== before) saveSlots();
-}, 30000);
+}, 60000);
 
-// ===== POLLING: AUCTION WATCHDOG =====
 setInterval(() => {
   for (const [aId, a] of Object.entries(auctions)) {
     if (a.status === 'live' && a.endsAt <= Date.now()) endAuction(aId);
   }
-}, 5000);
+}, 10000);
 
 // ===== OUTBOUND IP LOG =====
 const https = require('https');
@@ -741,24 +690,18 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// ===== RESUME IN-FLIGHT AUCTIONS ON STARTUP =====
+// ===== RESUME =====
 for (let i = 1; i <= 2; i++) ensureAuction(i);
 for (const [aId, a] of Object.entries(auctions)) {
   if (a.status === 'live') {
     const rem = a.endsAt - Date.now();
     if (rem <= 0) endAuction(aId);
-    else {
-      setTimeout(() => endAuction(aId), rem);
-      console.log(`⏰ Resuming ${aId} (${Math.ceil(rem / 1000)}s)`);
-    }
+    else { setTimeout(() => endAuction(aId), rem); console.log(`⏰ Resuming ${aId} (${Math.ceil(rem/1000)}s)`); }
   }
   if (a.cooldownUntil && a.cooldownUntil > Date.now()) {
     const rem = a.cooldownUntil - Date.now();
     setTimeout(() => {
-      if (auctions[aId]) {
-        auctions[aId] = { slotIndex: a.slotIndex, status: 'idle', bids: [], endsAt: null, cooldownUntil: null, lastWinner: null };
-        saveAuctions();
-      }
+      if (auctions[aId]) { auctions[aId] = { slotIndex: a.slotIndex, status: 'idle', bids: [], endsAt: null, cooldownUntil: null, lastWinner: null }; saveAuctions(); }
     }, rem);
   } else if (a.cooldownUntil && a.cooldownUntil <= Date.now() && a.status !== 'idle') {
     auctions[aId] = { slotIndex: a.slotIndex, status: 'idle', bids: [], endsAt: null, cooldownUntil: null, lastWinner: null };
