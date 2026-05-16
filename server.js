@@ -183,31 +183,24 @@ loadstring(game:HttpGet("https://api.luarmor.net/files/v4/loaders/${LOADER_HASH}
 
 // ===== HWID RESET =====
 // Uses the rawKey (short Luarmor key) — NOT the identifier or full loadstring.
-async function resetLuarmorHWID(rawKey, projectId, userId, username) {
-  try {
-    const identifier = getUserIdentifier(userId, username);
-
-    // Try reset by identifier first (primary Luarmor v3 method)
-    const res = await axios.patch(
-      `https://api.luarmor.net/v3/projects/${projectId}/users`,
-      {
-        identifier,
-        user_key:   rawKey,
-        reset_hwid: true
-      },
-      {
-        headers: {
-          Authorization:  LUARMOR_API_KEY,
-          'Content-Type': 'application/json'
-        }
+async function resetLuarmorHWID(rawKey, projectId) {
+  // Luarmor v3 correct endpoint: POST /v3/projects/:project_id/users/resethwid
+  // force: true bypasses any cooldown set on the project
+  const res = await axios.post(
+    `https://api.luarmor.net/v3/projects/${projectId}/users/resethwid`,
+    { user_key: rawKey, force: true },
+    {
+      headers: {
+        Authorization:  LUARMOR_API_KEY,
+        'Content-Type': 'application/json'
       }
-    );
-    console.log('Luarmor HWID reset response:', JSON.stringify(res.data, null, 2));
-    return true;
-  } catch (err) {
-    console.error('Luarmor HWID reset failed:', err.response?.data || err.message);
-    throw new Error(err.response?.data?.message || 'Failed to reset HWID');
+    }
+  );
+  console.log('Luarmor HWID reset response:', JSON.stringify(res.data, null, 2));
+  if (!res.data?.success) {
+    throw new Error(res.data?.message || 'HWID reset failed');
   }
+  return true;
 }
 
 function sortObjectKeys(obj) {
@@ -516,7 +509,7 @@ app.post('/api/slot/reset-hwid', requireAuth, async (req, res) => {
   }
 
   try {
-    await resetLuarmorHWID(slot.rawKey, projectId, id, req.session.user.username);
+    await resetLuarmorHWID(slot.rawKey, projectId);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
