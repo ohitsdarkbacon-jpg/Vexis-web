@@ -47,7 +47,7 @@ const LUARMOR_PROJECT_BID   = process.env.LUARMOR_PROJECT_ID_BID;   // Bid tier
 
 const PRO_CONFIG = {
   name:           'Pro',
-  pricePerHour:   8,      // $8/hr => 8 credits/hr
+  pricePerHour:   6,      // $6/hr => 6 credits/hr
   maxSlots:       6,
   creditToHours:  (c) => c / 8,
   projectId:      LUARMOR_PROJECT_PRO,
@@ -55,7 +55,7 @@ const PRO_CONFIG = {
 
 const BID_CONFIG = {
   name:           'Bid',
-  minBid:         16,     // $16 minimum
+  minBid:         12,     // $12 minimum
   prizeHours:     2,      // always 2hr flat
   maxSlots:       2,
   durationMins:   5,
