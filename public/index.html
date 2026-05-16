@@ -791,6 +791,46 @@ select option{background:var(--surface2);}
 .slot-display-card {
   overflow: visible !important;
 }
+  /* FINAL SLOT CARD FIX – REMOVE ALL PSEUDO OVERLAYS & BORDER LEAKS */
+.slot-display-card,
+.slot-display-card::before,
+.slot-display-card::after,
+.slot-display-card *::before,
+.slot-display-card *::after {
+  display: none !important;
+  content: none !important;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Restore the card itself as a visible container */
+.slot-display-card {
+  display: block !important;
+  background: rgba(10, 12, 20, 0.95) !important;
+  border: 1px solid rgba(245, 166, 35, 0.2) !important;
+  border-radius: 20px !important;
+  padding: 1.5rem !important;
+  overflow: visible !important;
+  position: relative !important;
+  z-index: auto !important;
+}
+
+/* Ensure all text content sits on top */
+.slot-display-card > * {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* No extra decorative lines inside */
+.slot-dots-wrap,
+.sdc-head,
+.sdc-stats,
+.slot-dots-label {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
 </style>
 </head>
 <body>
