@@ -757,6 +757,34 @@ select option{background:var(--surface2);}
   content: none !important;
   display: none !important;
 }
+  /* Make slot card borders thin (1px) and clean */
+.slot-display-card {
+  border: 1px solid var(--border2) !important;
+  box-shadow: none !important;
+}
+
+/* Remove any extra outline or glow that adds thickness */
+.slot-display-card:focus,
+.slot-display-card:hover {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* If there's a pseudo-element border, kill it */
+.slot-display-card::before,
+.slot-display-card::after {
+  border: none !important;
+  background: none !important;
+  height: 0 !important;
+  display: none !important;
+}
+
+/* Ensure inner elements don't add extra borders */
+.slot-dots-wrap,
+.sdc-head,
+.sdc-stats {
+  border: none !important;
+}
 </style>
 </head>
 <body>
