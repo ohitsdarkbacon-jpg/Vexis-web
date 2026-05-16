@@ -831,6 +831,41 @@ select option{background:var(--surface2);}
   background: transparent !important;
   box-shadow: none !important;
 }
+  /* Kill ALL pseudo-elements on all ancestors of slot cards */
+.slot-display-card,
+.slot-display-card::before,
+.slot-display-card::after,
+.slot-display-card *::before,
+.slot-display-card *::after,
+.slot-display-card *,
+.slot-display-card *::before,
+.slot-display-card *::after,
+.slot-display-card parent *,
+.slot-display-card parent *::before,
+.slot-display-card parent *::after {
+  all: unset !important;
+  display: none !important;
+  content: none !important;
+}
+
+/* Rebuild only the slot cards and their immediate children */
+.slot-display-card {
+  display: block !important;
+  background: rgba(10, 12, 20, 0.95) !important;
+  border: 1px solid rgba(245, 166, 35, 0.2) !important;
+  border-radius: 20px !important;
+  padding: 1.5rem !important;
+  overflow: visible !important;
+  position: relative !important;
+}
+
+.slot-display-card > * {
+  display: revert !important;
+  position: relative !important;
+  z-index: 10 !important;
+  background: transparent !important;
+  border: none !important;
+}
 </style>
 </head>
 <body>
