@@ -589,6 +589,54 @@ select option{background:var(--surface2);}
   backdrop-filter: blur(12px);
   isolation: auto;  /* don't isolate, let glow blend */
 }
+  /* Remove inner dark seam / black border on slot cards */
+.slot-display-card {
+  overflow: visible !important;  /* let inner shadows/glows breathe */
+  background: rgba(10,12,20,0.85);
+  border: 1px solid var(--border2);
+  border-radius: var(--r2) !important;
+  position: relative;
+}
+
+/* Ensure the card's own background covers the whole rounded area */
+.slot-display-card::before {
+  border-radius: var(--r2);
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: inherit;  /* match parent background */
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Remove any extra borders or dark backgrounds from inner containers */
+.slot-dots-wrap,
+.sdc-stats,
+.sdc-head {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* If there's a border on the dots grid container, remove it */
+.slot-dots {
+  background: transparent;
+  gap: 7px;
+}
+
+/* Fix any black line appearing between card body and stats */
+.sdc-stats {
+  border-top: 1px solid rgba(255,255,255,0.05);  /* keep original subtle line */
+  margin-top: 0.25rem;
+  padding-top: 1rem;
+  background: transparent;
+}
+
+/* Force inner content to not create dark seams */
+.hero-preview-inner,
+.slot-display-card > * {
+  border-radius: inherit;
+}
 </style>
 </head>
 <body>
