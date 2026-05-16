@@ -170,7 +170,8 @@ async function createLuarmorKey(hours, discordId, username, projectId) {
 
 async function resetLuarmorHWID(userId, projectId) {
   try {
-    const identifier = getUserIdentifier(userId, userId); // fallback-safe
+    const username = users[userId]?.username || userId;
+    const identifier = getUserIdentifier(userId, username);
 
     await axios.patch(
       `https://api.luarmor.net/v3/projects/${projectId}/users`,
