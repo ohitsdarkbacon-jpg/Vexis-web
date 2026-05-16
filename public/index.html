@@ -670,6 +670,36 @@ select option{background:var(--surface2);}
   position: relative;
   z-index: 2;
 }
+  /* Hard reset for slot display cards */
+.slot-display-card {
+  background: rgba(10,12,20,0.95) !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(245,166,35,0.2) !important;
+  padding: 1.5rem !important;
+  position: relative !important;
+  overflow: visible !important;
+}
+
+.slot-display-card::before,
+.slot-display-card::after {
+  display: none !important;
+}
+
+.slot-dots-wrap,
+.sdc-head,
+.sdc-stats {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  position: relative;
+  z-index: 1;
+}
+
+.sdc-stats {
+  border-top: 1px solid rgba(255,255,255,0.1) !important;
+  margin-top: 1rem !important;
+  padding-top: 1rem !important;
+}
 </style>
 </head>
 <body>
