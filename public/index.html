@@ -1057,10 +1057,10 @@ select option{background:var(--surface2);}
         <div class="panel-title">Pro Slot <span class="panel-badge">$8/hr</span></div>
         <div class="card" id="pro-active-card" style="display:none;">
           <div class="card-label">Your Active Key</div>
-          <div class="key-box" id="pro-key-box" onclick="copyKeyBox('pro-key-box','pro-key-text')">
-            <span class="key-text" id="pro-key-text">—</span>
-            <span class="key-copy-btn">Copy</span>
-          </div>
+          <div class="key-box" id="pro-key-box" onclick="copyKeyBox('pro-key-box','pro-loader-text')">
+  <span class="key-text" id="pro-loader-text" style="font-size:0.7rem; word-break:break-all;">—</span>
+  <span class="key-copy-btn">Copy Loader</span>
+</div>
           <div class="prog-bar"><div class="prog-fill" id="pro-prog" style="width:0%"></div></div>
           <div class="prog-label" id="pro-prog-label">—</div>
           <div style="display:flex;gap:8px;margin-top:1rem;flex-wrap:wrap;">
@@ -1099,10 +1099,10 @@ select option{background:var(--surface2);}
         <div class="g2" id="bid-slots-grid"></div>
         <div class="card" id="bid-key-card" style="display:none;">
           <div class="card-label">Your Active Bid Key</div>
-          <div class="key-box" id="bid-key-box" onclick="copyKeyBox('bid-key-box','bid-key-text')">
-            <span class="key-text" id="bid-key-text">—</span>
-            <span class="key-copy-btn">Copy</span>
-          </div>
+          <div class="key-box" id="pro-key-box" onclick="copyKeyBox('pro-key-box','pro-key-text')">
+  <span class="key-text" id="pro-key-text" style="font-size:0.7rem; word-break:break-all;">—</span>
+  <span class="key-copy-btn">Copy Loader</span>
+</div>
           <div class="prog-bar"><div class="prog-fill" id="bid-prog" style="width:0%"></div></div>
           <div class="prog-label" id="bid-prog-label">—</div>
           <div style="display:flex;gap:8px;margin-top:1rem;flex-wrap:wrap;">
@@ -1505,11 +1505,13 @@ function renderProPanel(){
   const ps=me.proSlot;
   document.getElementById('pro-active-card').style.display=ps?'block':'none';
   document.getElementById('pro-inactive-card').style.display=ps?'none':'block';
-  if(ps){
-    document.getElementById('pro-key-text').textContent=ps.key;
-    document.getElementById('pro-prog').style.width=getExpPct(ps.expiry,ps.activatedAt||Date.now()-3600000)+'%';
-    document.getElementById('pro-prog-label').textContent='Expires in '+formatTime(ps.expiry-Date.now());
-  }
+ if(ps){
+  // Use loader if available, otherwise build from key
+  const loaderText = ps.loader || `loadstring(game:HttpGet("https://api.luarmor.net/v3/projects/${PROJECT_ID_PRO}/loader/${ps.key}"))()`;
+  document.getElementById('pro-key-text').textContent = loaderText;
+  document.getElementById('pro-prog').style.width = getExpPct(ps.expiry, ps.activatedAt || Date.now() - 3600000) + '%';
+  document.getElementById('pro-prog-label').textContent = 'Expires in ' + formatTime(ps.expiry - Date.now());
+}
   const keys=me.proKeys||[];
   if(keys.length){
     document.getElementById('pro-history-card').style.display='block';
@@ -1749,4 +1751,3 @@ init();
 </script>
 </body>
 </html>
-
