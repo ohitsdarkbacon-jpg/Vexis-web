@@ -735,6 +735,28 @@ select option{background:var(--surface2);}
   border: 1px solid var(--border2) !important;  /* keep visible border but no inset */
   box-shadow: none !important;
 }
+  /* Nuclear reset for slot cards – removes all overlays */
+.slot-display-card {
+  background: rgba(10,12,20,0.95);
+  border: 1px solid rgba(245,166,35,0.2);
+  border-radius: 20px;
+  padding: 1.5rem;
+  position: relative;
+}
+
+.slot-display-card > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Completely remove any generated content on these cards */
+.slot-display-card:before,
+.slot-display-card:after,
+.slot-display-card > :before,
+.slot-display-card > :after {
+  content: none !important;
+  display: none !important;
+}
 </style>
 </head>
 <body>
