@@ -126,38 +126,47 @@ async function createLuarmorKey(hours, discordId, username, projectId) {
   const expiryUnix = Math.floor(Date.now() / 1000) + Math.floor(hours * 3600);
   const identifier = getUserIdentifier(discordId, username);
 
-  const res = await axios.get(
+  // Step 1: Create or update the user with the new expiry
+  const createRes = await axios.post(
     `https://api.luarmor.net/v3/projects/${projectId}/users`,
     {
-      params: {
-        discord_id: discordId,
-        identifier,
-        auth_expire: expiryUnix,
-        note: `${username} (${discordId})`
-      },
+      discord_id:  discordId,
+      identifier,
+      auth_expire: expiryUnix,
+      note:        `${username} (${discordId})`
+    },
+    {
       headers: {
-        Authorization: LUARMOR_API_KEY
+        Authorization:  LUARMOR_API_KEY,
+        'Content-Type': 'application/json'
       }
     }
   );
+  console.log('Luarmor create response:', JSON.stringify(createRes.data, null, 2));
 
-  // Log the full response so we can see exactly what Luarmor returns
-  console.log('Luarmor response:', JSON.stringify(res.data, null, 2));
+  // Step 2: Fetch the user record to retrieve their key
+  const fetchRes = await axios.get(
+    `https://api.luarmor.net/v3/projects/${projectId}/users`,
+    {
+      params:  { identifier },
+      headers: { Authorization: LUARMOR_API_KEY }
+    }
+  );
+  console.log('Luarmor fetch response:', JSON.stringify(fetchRes.data, null, 2));
 
-  const data = res.data;
+  const fetchData = fetchRes.data;
+  const userRecord = Array.isArray(fetchData?.users) ? fetchData.users[0] : null;
 
-  // Check known Luarmor v3 field names first (most likely candidates)
   const rawKey =
-    data?.user_key   ||   // primary field name in v3
-    data?.key        ||   // alternate
-    data?.script_key ||   // alternate
-    data?.data?.user_key ||
-    data?.data?.key  ||
-    data?.data?.script_key ||
+    userRecord?.user_key   ||
+    userRecord?.key        ||
+    userRecord?.script_key ||
+    fetchData?.user_key    ||
+    fetchData?.key         ||
     null;
 
   if (!rawKey || typeof rawKey !== 'string') {
-    throw new Error(`No key in Luarmor response. Full response: ${JSON.stringify(data)}`);
+    throw new Error(`No key in Luarmor response. Full response: ${JSON.stringify(fetchData)}`);
   }
 
   const LOADER_HASH = 'a956818a26401a68387b022f2525679a';
