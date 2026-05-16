@@ -125,30 +125,72 @@ function isBidSlotOnCooldown(slotIndex) {
 async function createLuarmorKey(hours, discordId, username, projectId) {
   const expiryUnix = Math.floor(Date.now() / 1000) + Math.floor(hours * 3600);
   const identifier = getUserIdentifier(discordId, username);
-  const res = await axios.post(
+
+  const res = await axios.get(
     `https://api.luarmor.net/v3/projects/${projectId}/users`,
-    { discord_id: discordId, identifier, auth_expire: expiryUnix, note: `${username} (${discordId})` },
-    { headers: { Authorization: LUARMOR_API_KEY, 'Content-Type': 'application/json' } }
+    {
+      params: {
+        discord_id: discordId,
+        identifier,
+        auth_expire: expiryUnix,
+        note: `${username} (${discordId})`
+      },
+      headers: {
+        Authorization: LUARMOR_API_KEY
+      }
+    }
   );
+
   const findKey = obj => {
     if (typeof obj === 'string' && /^[A-Za-z0-9]{6,}$/.test(obj)) return obj;
     if (typeof obj === 'object' && obj) {
-      for (const v of Object.values(obj)) { const k = findKey(v); if (k) return k; }
+      for (const v of Object.values(obj)) {
+        const k = findKey(v);
+        if (k) return k;
+      }
     }
     return null;
   };
+
   const key = findKey(res.data);
   if (!key) throw new Error('No key in Luarmor response');
-  return { key, expiry: expiryUnix * 1000 };
+
+  const LOADER_HASH = 'a956818a26401a68387b022f2525679a';
+
+  const loadstring =
+    `script_key="${key}";` +
+    `loadstring(game:HttpGet("https://api.luarmor.net/files/v4/loaders/${LOADER_HASH}.lua"))()`;
+
+  return {
+    key: loadstring,
+    rawKey: key,
+    expiry: expiryUnix * 1000
+  };
 }
 
 async function resetLuarmorHWID(userId, projectId) {
-  const identifier = getUserIdentifier(userId, userId);
-  await axios.patch(
-    `https://api.luarmor.net/v3/projects/${projectId}/users`,
-    { identifier, reset_hwid: true },
-    { headers: { Authorization: LUARMOR_API_KEY, 'Content-Type': 'application/json' } }
-  );
+  try {
+    const identifier = getUserIdentifier(userId, userId); // fallback-safe
+
+    await axios.patch(
+      `https://api.luarmor.net/v3/projects/${projectId}/users`,
+      {
+        identifier,
+        reset_hwid: true
+      },
+      {
+        headers: {
+          Authorization: LUARMOR_API_KEY,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    return true;
+  } catch (err) {
+    console.error('Luarmor HWID reset failed:', err.response?.data || err.message);
+    throw new Error('Failed to reset HWID');
+  }
 }
 
 function sortObjectKeys(obj) {
@@ -405,11 +447,16 @@ app.post('/api/slot/pro/activate', requireAuth, async (req, res) => {
 
   if (pauseState.pro) return res.status(400).json({ error: 'Pro slots are currently paused by admin.' });
 
-const creditsNum = parseInt(credits);
-if (!creditsNum || creditsNum <= 0) return res.status(400).json({ error: 'Invalid credits amount.' });
-if (creditsNum % 8 !== 0) return res.status(400).json({ error: 'Only full hours (multiples of 8 credits).' });
-if (creditsNum > users[id].credits) return res.status(400).json({ error: 'Insufficient credits.' });
-const hours = creditsNum / 8;   // ← only one declaration
+  const creditsNum = parseInt(credits);
+  if (!creditsNum || creditsNum <= 0) return res.status(400).json({ error: 'Invalid credits amount.' });
+  if (creditsNum > users[id].credits) return res.status(400).json({ error: 'Insufficient credits.' });
+
+  const hours = creditsNum / PRO_CONFIG.pricePerHour;
+  if (hours < 0.125) return res.status(400).json({ error: 'Minimum 1 credit ($1) for ~7.5 minutes.' });
+
+  const activeCount = slots.filter(s => s?.type === 'pro' && s.expiry > Date.now()).length;
+  if (activeCount >= PRO_CONFIG.maxSlots) return res.status(400).json({ error: 'All Pro slots are full.' });
+
   try {
     const { key, expiry } = await createLuarmorKey(hours, id, username, PRO_CONFIG.projectId);
     slots = slots.filter(s => !(s.userId === id && s.type === 'pro'));
