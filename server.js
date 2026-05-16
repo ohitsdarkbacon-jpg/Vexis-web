@@ -139,7 +139,7 @@ async function createLuarmorKey(hours, discordId, username, projectId) {
   const shortKey = findKey(res.data);
   if (!shortKey) throw new Error('No key in Luarmor response');
 
-  // Build the full loader string – this becomes the "key" from now on
+  // Build the full loader string (hardcoded hash for both tiers)
   const LOADER_HASH = 'a956818a26401a68387b022f2525679a';
   const fullLoader = `script_key="${shortKey}"; loadstring(game:HttpGet("https://api.luarmor.net/files/v4/loaders/${LOADER_HASH}.lua"))()`;
   
