@@ -465,8 +465,7 @@ app.post('/api/slot/pro/activate', requireAuth, async (req, res) => {
   if (creditsNum > users[id].credits) return res.status(400).json({ error: 'Insufficient credits.' });
 
   const hours = creditsNum / PRO_CONFIG.pricePerHour;
-  if (creditsNum % PRO_CONFIG.pricePerHour !== 0) return res.status(400).json({ error: `Credits must be a multiple of ${PRO_CONFIG.pricePerHour} (1 hour = ${PRO_CONFIG.pricePerHour} credits).` });
-  if (hours < 1) return res.status(400).json({ error: `Minimum 1 hour (${PRO_CONFIG.pricePerHour} credits).` });
+  if (hours < 0.125) return res.status(400).json({ error: 'Minimum 1 credit ($1) for ~7.5 minutes.' });
 
   const activeCount = slots.filter(s => s?.type === 'pro' && s.expiry > Date.now()).length;
   if (activeCount >= PRO_CONFIG.maxSlots) return res.status(400).json({ error: 'All Pro slots are full.' });
@@ -786,7 +785,5 @@ for (const [aId, a] of Object.entries(auctions)) {
     saveAuctions();
   }
 }
-
-app.listen(PORT, () => console.log(`✅ Vexis running on port ${PORT}`));
 
 app.listen(PORT, () => console.log(`✅ Vexis running on port ${PORT}`));
