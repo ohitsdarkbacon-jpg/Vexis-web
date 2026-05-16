@@ -125,40 +125,73 @@ function isBidSlotOnCooldown(slotIndex) {
 async function createLuarmorKey(hours, discordId, username, projectId) {
   const expiryUnix = Math.floor(Date.now() / 1000) + Math.floor(hours * 3600);
   const identifier = getUserIdentifier(discordId, username);
+
   const res = await axios.post(
     `https://api.luarmor.net/v3/projects/${projectId}/users`,
-    { discord_id: discordId, identifier, auth_expire: expiryUnix, note: `${username} (${discordId})` },
-    { headers: { Authorization: LUARMOR_API_KEY, 'Content-Type': 'application/json' } }
+    {
+      discord_id: discordId,
+      identifier,
+      auth_expire: expiryUnix,
+      note: `${username} (${discordId})`
+    },
+    {
+      headers: {
+        Authorization: LUARMOR_API_KEY,
+        'Content-Type': 'application/json'
+      }
+    }
   );
+
   const findKey = obj => {
     if (typeof obj === 'string' && /^[A-Za-z0-9]{6,}$/.test(obj)) return obj;
     if (typeof obj === 'object' && obj) {
-      for (const v of Object.values(obj)) { const k = findKey(v); if (k) return k; }
+      for (const v of Object.values(obj)) {
+        const k = findKey(v);
+        if (k) return k;
+      }
     }
     return null;
   };
+
   const shortKey = findKey(res.data);
-if (!shortKey) throw new Error('No key in Luarmor response');
+  if (!shortKey) throw new Error('No key in Luarmor response');
 
-// hardcoded loader hash (you already used this earlier)
-const LOADER_HASH = 'a956818a26401a68387b022f2525679a';
+  const LOADER_HASH = 'a956818a26401a68387b022f2525679a';
 
-const fullLoadstring =
-  `script_key="${shortKey}";` +
-  `loadstring(game:HttpGet("https://api.luarmor.net/files/v4/loaders/${LOADER_HASH}.lua"))()`;
+  const fullLoadstring =
+    `script_key="${shortKey}";` +
+    `loadstring(game:HttpGet("https://api.luarmor.net/files/v4/loaders/${LOADER_HASH}.lua"))()`;
 
-return {
-  key: fullLoadstring,
-  rawKey: shortKey,
-  expiry: expiryUnix * 1000
-};
+  return {
+    key: fullLoadstring,
+    rawKey: shortKey,
+    expiry: expiryUnix * 1000
+  };
+} // ✅ THIS WAS MISSING
+
 async function resetLuarmorHWID(userId, projectId) {
-  const identifier = getUserIdentifier(userId, userId);
-  await axios.patch(
-    `https://api.luarmor.net/v3/projects/${projectId}/users`,
-    { identifier, reset_hwid: true },
-    { headers: { Authorization: LUARMOR_API_KEY, 'Content-Type': 'application/json' } }
-  );
+  try {
+    const identifier = getUserIdentifier(userId, userId); // fallback-safe
+
+    await axios.patch(
+      `https://api.luarmor.net/v3/projects/${projectId}/users`,
+      {
+        identifier,
+        reset_hwid: true
+      },
+      {
+        headers: {
+          Authorization: LUARMOR_API_KEY,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    return true;
+  } catch (err) {
+    console.error('Luarmor HWID reset failed:', err.response?.data || err.message);
+    throw new Error('Failed to reset HWID');
+  }
 }
 
 function sortObjectKeys(obj) {
