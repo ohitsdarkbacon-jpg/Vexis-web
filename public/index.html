@@ -523,6 +523,71 @@ select option{background:var(--surface2);}
   .hero-cta .btn{width:100%;max-width:280px;justify-content:center;}
 }
 @media(hover:none){body{cursor:auto;}#cursor{display:none;}}
+  /* ── FIX MOBILE NAV OVERFLOW WHEN LOGGED IN ── */
+@media (max-width: 768px) {
+  .nav-right {
+    gap: 4px;                         /* reduce spacing */
+    max-width: calc(100% - 60px);     /* leave room for burger */
+    justify-content: flex-end;
+  }
+
+  /* Shrink user pill */
+  .nav-user-pill {
+    padding: 3px 8px 3px 6px;
+    gap: 6px;
+  }
+  .nav-avatar {
+    width: 22px;
+    height: 22px;
+  }
+  .nav-username {
+    font-size: 0.7rem;
+    max-width: 80px;                  /* prevent long usernames */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Shrink credits pill */
+  .nav-credits-pill {
+    font-size: 0.65rem;
+    padding: 3px 8px;
+  }
+
+  /* Make burger always tappable */
+  .burger {
+    margin-left: 2px;
+    padding: 6px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    z-index: 310;
+  }
+  .burger span {
+    width: 18px;
+    height: 2px;
+  }
+}
+
+/* Extra safety for very narrow screens */
+@media (max-width: 480px) {
+  .nav-inner {
+    gap: 6px;
+  }
+  .nav-logo {
+    font-size: 0.85rem;
+    gap: 6px;
+  }
+  .vlogo {
+    width: 28px;
+    height: 28px;
+  }
+  .nav-right {
+    gap: 2px;
+  }
+  .nav-username {
+    max-width: 60px;
+  }
+}
 </style>
 </head>
 <body>
