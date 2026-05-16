@@ -21,7 +21,6 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
 body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--black);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;cursor:none;}
- 
 body::before{
   content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background:
@@ -39,22 +38,11 @@ body::after{
     radial-gradient(circle at 30% 75%,rgba(245,166,35,0.04) 0%,transparent 20%);
   animation:ambientShift 20s ease-in-out infinite alternate;
 }
-@keyframes ambientShift{
-  0%{transform:scale(1) translate(0,0);}
-  50%{transform:scale(1.05) translate(-10px,10px);}
-  100%{transform:scale(1) translate(10px,-5px);}
-}
- 
+@keyframes ambientShift{0%{transform:scale(1) translate(0,0);}50%{transform:scale(1.05) translate(-10px,10px);}100%{transform:scale(1) translate(10px,-5px);}}
 .wave-bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
 .wave-bg svg{position:absolute;width:200%;height:200%;top:-50%;left:-50%;opacity:0.025;animation:waveDrift 40s linear infinite;}
 @keyframes waveDrift{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
- 
-.noise-overlay{
-  position:fixed;inset:0;z-index:9999;pointer-events:none;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  opacity:0.018;
-}
- 
+.noise-overlay{position:fixed;inset:0;z-index:9999;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:0.018;}
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-track{background:var(--bg);}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
@@ -72,31 +60,13 @@ body.cursor-click #cursor-ring{width:22px;height:22px;border-color:var(--gold);}
 body.cursor-click #cursor-trail{width:44px;height:44px;}
  
 /* ── NAV ── */
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:300;
-  display:flex;align-items:center;padding:0 2rem;height:var(--nav);
-  background:rgba(6,8,16,0.85);backdrop-filter:blur(24px) saturate(1.5);
-  border-bottom:1px solid rgba(245,166,35,0.08);
-}
+nav{position:fixed;top:0;left:0;right:0;z-index:300;display:flex;align-items:center;padding:0 2rem;height:var(--nav);background:rgba(6,8,16,0.85);backdrop-filter:blur(24px) saturate(1.5);border-bottom:1px solid rgba(245,166,35,0.08);}
 .nav-inner{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:1120px;margin:0 auto;gap:1rem;}
-.nav-logo{
-  display:flex;align-items:center;gap:11px;
-  font-family:'Nunito',sans-serif;font-weight:900;font-size:1.05rem;
-  color:var(--text);text-decoration:none;letter-spacing:-0.01em;
-  flex-shrink:0;background:none;border:none;cursor:none;
-}
- 
-/* ── IMPROVED VEXIS LOGO ── */
+.nav-logo{display:flex;align-items:center;gap:11px;font-family:'Nunito',sans-serif;font-weight:900;font-size:1.05rem;color:var(--text);text-decoration:none;letter-spacing:-0.01em;flex-shrink:0;background:none;border:none;cursor:none;}
 .vlogo{width:34px;height:34px;flex-shrink:0;position:relative;}
 .vlogo svg{width:34px;height:34px;filter:drop-shadow(0 0 8px rgba(245,166,35,0.5)) drop-shadow(0 2px 4px rgba(0,0,0,0.6));}
- 
 .nav-center{display:flex;align-items:center;gap:2px;flex:1;justify-content:center;}
-.nav-btn{
-  padding:7px 16px;border-radius:var(--r);font-size:0.84rem;font-weight:500;
-  color:var(--text2);cursor:none;border:none;background:none;
-  transition:color .15s,background .15s;white-space:nowrap;
-  font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:0.01em;
-}
+.nav-btn{padding:7px 16px;border-radius:var(--r);font-size:0.84rem;font-weight:500;color:var(--text2);cursor:none;border:none;background:none;transition:color .15s,background .15s;white-space:nowrap;font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:0.01em;}
 .nav-btn:hover{color:var(--text);background:rgba(255,255,255,0.05);}
 .nav-btn.active{color:var(--text);background:rgba(255,255,255,0.06);}
 .nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
@@ -115,19 +85,14 @@ nav{
 .burger.open span:nth-child(3){transform:rotate(-45deg) translate(4.5px,-4.5px);}
 .mob-menu{display:none;position:fixed;inset:0;top:var(--nav);background:rgba(6,8,16,0.97);z-index:250;flex-direction:column;padding:1.5rem;gap:4px;backdrop-filter:blur(20px);}
 .mob-menu.open{display:flex;}
-.mob-btn{padding:14px 18px;border-radius:var(--r2);font-size:0.95rem;font-weight:500;color:var(--text2);cursor:none;border:none;background:none;text-align:left;width:100%;font-family:'Plus Jakarta Sans',sans-serif;transition:all .15s;border:1px solid transparent;}
+.mob-btn{padding:14px 18px;border-radius:var(--r2);font-size:0.95rem;font-weight:500;color:var(--text2);cursor:none;border:1px solid transparent;background:none;text-align:left;width:100%;font-family:'Plus Jakarta Sans',sans-serif;transition:all .15s;}
 .mob-btn:hover{background:var(--surface2);color:var(--text);border-color:var(--border);}
 .mob-btn.mob-active{color:var(--gold);background:var(--gold-subtle);border-color:rgba(245,166,35,0.2);}
 .mob-sep{height:1px;background:var(--border);margin:8px 0;}
 .mob-login-btn{background:var(--surface2)!important;color:var(--text)!important;border:1px solid var(--border)!important;margin-top:8px;}
  
 /* ── BUTTONS ── */
-.btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:7px;
-  padding:10px 22px;border-radius:var(--r2);font-family:'Plus Jakarta Sans',sans-serif;
-  font-weight:600;font-size:0.85rem;cursor:none;border:none;
-  transition:all .2s;text-decoration:none;white-space:nowrap;letter-spacing:0.01em;
-}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 22px;border-radius:var(--r2);font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:0.85rem;cursor:none;border:none;transition:all .2s;text-decoration:none;white-space:nowrap;letter-spacing:0.01em;}
 .btn-gold{background:var(--gold);color:#000;box-shadow:0 0 0 rgba(245,166,35,0);}
 .btn-gold:hover{background:var(--gold-light);transform:translateY(-2px);box-shadow:0 8px 30px rgba(245,166,35,0.25);}
 .btn-ghost{background:rgba(255,255,255,0.05);color:var(--text2);border:1px solid var(--border);}
@@ -152,7 +117,6 @@ nav{
 .orb-3{width:350px;height:350px;background:rgba(0,100,160,0.08);top:100px;right:-80px;animation:orbFloat2 18s ease-in-out infinite alternate-reverse;}
 @keyframes orbFloat1{0%{transform:translateX(-50%) scale(1);}100%{transform:translateX(-50%) scale(1.15) translateY(30px);}}
 @keyframes orbFloat2{0%{transform:scale(1) translate(0,0);}100%{transform:scale(1.2) translate(30px,-20px);}}
- 
 .hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding:7rem 1.5rem 5rem;max-width:100%;position:relative;}
 .hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(245,166,35,0.07);border:1px solid rgba(245,166,35,0.2);padding:6px 16px 6px 12px;border-radius:40px;font-size:0.73rem;color:var(--text2);font-family:'JetBrains Mono',monospace;margin-bottom:2rem;animation:fadeUp .6s ease both;}
 .hero-eyebrow strong{color:var(--gold);}
@@ -160,19 +124,8 @@ nav{
 .hero h1 em{font-style:normal;color:var(--gold);}
 .hero-sub{color:var(--text2);font-size:1.05rem;max-width:480px;line-height:1.8;margin-bottom:2.5rem;font-weight:400;animation:fadeUp .6s .16s ease both;}
 .hero-cta{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;animation:fadeUp .6s .24s ease both;}
- 
 .hero-preview{margin-top:5rem;width:100%;max-width:980px;animation:fadeUp .8s .35s ease both;position:relative;}
-.hero-preview::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: var(--r3);
-  background: linear-gradient(135deg, rgba(245, 166, 35, 0.15), rgba(0, 120, 180, 0.1) 40%, transparent 70%);
-  filter: blur(12px);
-  opacity: 0.7;
-  z-index: 0;
-  pointer-events: none;
-}
+.hero-preview::before{content:'';position:absolute;inset:0;border-radius:var(--r3);background:linear-gradient(135deg,rgba(245,166,35,0.15),rgba(0,120,180,0.1) 40%,transparent 70%);filter:blur(12px);opacity:0.7;z-index:0;pointer-events:none;}
 .hero-preview::after{content:'';position:absolute;inset:0;border-radius:var(--r3);box-shadow:0 0 80px rgba(245,166,35,0.06),0 0 160px rgba(0,100,160,0.06);z-index:0;pointer-events:none;}
 .hero-preview-inner{position:relative;z-index:1;background:rgba(10,12,20,0.9);border-radius:var(--r3);padding:24px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;border:1px solid rgba(245,166,35,0.12);backdrop-filter:blur(10px);}
 .pcard{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:var(--r2);padding:20px 18px;display:flex;flex-direction:column;gap:6px;transition:border-color .2s,background .2s;}
@@ -181,38 +134,16 @@ nav{
 .pcard-val{font-family:'Nunito',sans-serif;font-weight:800;font-size:1.9rem;color:var(--gold);line-height:1;}
 .pcard-sub{font-size:0.73rem;color:var(--text2);}
  
-/* ── SLOTS DISPLAY - CENTERED ACCURATE ── */
-.slots-section{
-  width:100%;max-width:980px;margin:4rem auto 0;
-  animation:fadeUp .6s .4s ease both;
-  padding:0 0;
-}
-.slots-header{
-  text-align:center;margin-bottom:2rem;
-}
-.slots-header h2{
-  font-family:'Nunito',sans-serif;font-weight:800;font-size:1.5rem;letter-spacing:-0.01em;margin-bottom:0.35rem;
-}
+/* ── SLOTS DISPLAY ── */
+.slots-section{width:100%;max-width:980px;margin:4rem auto 0;animation:fadeUp .6s .4s ease both;padding:0 0;}
+.slots-header{text-align:center;margin-bottom:2rem;}
+.slots-header h2{font-family:'Nunito',sans-serif;font-weight:800;font-size:1.5rem;letter-spacing:-0.01em;margin-bottom:0.35rem;}
 .slots-header p{font-size:0.82rem;color:var(--text3);font-family:'JetBrains Mono',monospace;}
- 
 .slots-cards-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
- 
-.slot-display-card{
-  background:rgba(10,12,20,0.85);
-  border:1px solid var(--border2);
-  border-radius:var(--r2);
-  padding:1.5rem;
-  backdrop-filter:blur(12px);
-  position:relative;
-  overflow:hidden;
-}
-.slot-display-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(245,166,35,0.3),transparent);
-}
+.slot-display-card{background:rgba(10,12,20,0.85);border:1px solid var(--border2);border-radius:var(--r2);padding:1.5rem;backdrop-filter:blur(12px);position:relative;overflow:hidden;}
+.slot-display-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(245,166,35,0.3),transparent);}
 .slot-display-card.pro-card::before{background:linear-gradient(90deg,transparent,rgba(255,77,106,0.4),transparent);}
 .slot-display-card.bid-card::before{background:linear-gradient(90deg,transparent,rgba(245,166,35,0.4),transparent);}
- 
 .sdc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;}
 .sdc-title{font-family:'Nunito',sans-serif;font-weight:800;font-size:0.9rem;text-transform:uppercase;letter-spacing:0.1em;}
 .sdc-title.pro{color:var(--danger);}
@@ -220,39 +151,16 @@ nav{
 .sdc-badge{font-family:'JetBrains Mono',monospace;font-size:0.65rem;padding:3px 10px;border-radius:20px;}
 .sdc-badge.pro{background:rgba(255,77,106,0.1);color:var(--danger);border:1px solid rgba(255,77,106,0.25);}
 .sdc-badge.bid{background:var(--gold-subtle);color:var(--gold);border:1px solid rgba(245,166,35,0.25);}
- 
-/* Slot dots grid */
 .slot-dots-wrap{margin-bottom:1.25rem;}
 .slot-dots-label{font-size:0.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-bottom:0.6rem;display:flex;align-items:center;justify-content:space-between;}
 .slot-dots-label span{font-family:'JetBrains Mono',monospace;}
 .slot-dots{display:flex;gap:7px;flex-wrap:wrap;}
-.sdot-block{
-  width:36px;height:36px;border-radius:10px;
-  border:1px solid rgba(255,255,255,0.07);
-  background:rgba(255,255,255,0.03);
-  display:flex;align-items:center;justify-content:center;
-  font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text3);
-  transition:all .3s ease;
-  position:relative;
-}
-.sdot-block.occupied{
-  background:rgba(255,77,106,0.12);
-  border-color:rgba(255,77,106,0.35);
-  color:var(--danger);
-}
-.sdot-block.occupied.bid{
-  background:rgba(245,166,35,0.1);
-  border-color:rgba(245,166,35,0.3);
-  color:var(--gold);
-}
-.sdot-block.occupied.live{
-  background:rgba(255,77,106,0.15);
-  border-color:rgba(255,77,106,0.5);
-  animation:slotPulse 2s ease infinite;
-}
+.sdot-block{width:36px;height:36px;border-radius:10px;border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text3);transition:all .3s ease;position:relative;}
+.sdot-block.occupied{background:rgba(255,77,106,0.12);border-color:rgba(255,77,106,0.35);color:var(--danger);}
+.sdot-block.occupied.bid{background:rgba(245,166,35,0.1);border-color:rgba(245,166,35,0.3);color:var(--gold);}
+.sdot-block.occupied.live{background:rgba(255,77,106,0.15);border-color:rgba(255,77,106,0.5);animation:slotPulse 2s ease infinite;}
 .sdot-block.empty{opacity:0.4;}
 @keyframes slotPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,77,106,0);}50%{box-shadow:0 0 0 4px rgba(255,77,106,0.15);}}
- 
 .sdc-stats{display:flex;gap:0;border-top:1px solid rgba(255,255,255,0.05);margin-top:0.25rem;padding-top:1rem;}
 .sdc-stat{flex:1;text-align:center;border-right:1px solid rgba(255,255,255,0.05);}
 .sdc-stat:last-child{border-right:none;}
@@ -262,7 +170,7 @@ nav{
 .sdc-stat-val.gold{color:var(--gold);}
 .sdc-stat-lbl{font-size:0.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-top:3px;font-weight:600;}
  
-/* Stats */
+/* ── STATS ROW ── */
 .stats-row{max-width:980px;margin:3rem auto 0;display:grid;grid-template-columns:repeat(4,1fr);border:1px solid rgba(245,166,35,0.1);border-radius:var(--r2);overflow:hidden;background:rgba(10,12,20,0.6);backdrop-filter:blur(10px);position:relative;}
 .stats-row::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(245,166,35,0.03),transparent 40%,rgba(0,120,180,0.03));pointer-events:none;}
 .stat-cell{padding:2.2rem 1.25rem;text-align:center;border-right:1px solid rgba(245,166,35,0.08);transition:background .2s;position:relative;}
@@ -271,6 +179,7 @@ nav{
 .stat-cell .val{font-family:'Nunito',sans-serif;font-size:2.4rem;font-weight:800;color:var(--gold);letter-spacing:-0.02em;}
 .stat-cell .lbl{font-size:0.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.12em;margin-top:0.4rem;font-weight:600;}
  
+/* ── TICKER ── */
 .ticker-bar{width:100%;overflow:hidden;padding:8px 0;margin-bottom:0;border-top:1px solid rgba(245,166,35,0.1);border-bottom:1px solid rgba(245,166,35,0.1);background:linear-gradient(90deg,transparent,rgba(245,166,35,0.04) 20%,rgba(0,120,180,0.03) 60%,transparent);position:relative;z-index:1;}
 .ticker-bar::before,.ticker-bar::after{content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none;}
 .ticker-bar::before{left:0;background:linear-gradient(90deg,var(--black),transparent);}
@@ -354,28 +263,12 @@ footer{border-top:1px solid rgba(245,166,35,0.07);padding:2.5rem 1.5rem;text-ali
 .tag-red{background:rgba(255,77,106,0.08);color:var(--danger);border:1px solid rgba(255,77,106,0.2);}
 .tag-gray{background:rgba(255,255,255,0.04);color:var(--text3);border:1px solid var(--border);}
  
-/* ── DASHBOARD - ALL ROUNDED ── */
+/* ── DASHBOARD ── */
 .dash-wrap{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - var(--nav));}
-.sidebar{
-  background:rgba(10,12,20,0.92);
-  border-right:1px solid rgba(245,166,35,0.07);
-  padding:1.25rem 0.875rem;
-  display:flex;flex-direction:column;gap:3px;
-  position:sticky;top:var(--nav);
-  height:calc(100vh - var(--nav));
-  overflow-y:auto;
-  backdrop-filter:blur(10px);
-}
+.sidebar{background:rgba(10,12,20,0.92);border-right:1px solid rgba(245,166,35,0.07);padding:1.25rem 0.875rem;display:flex;flex-direction:column;gap:3px;position:sticky;top:var(--nav);height:calc(100vh - var(--nav));overflow-y:auto;backdrop-filter:blur(10px);}
 .sidebar-label{font-size:0.62rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.14em;padding:0 8px;margin:10px 0 5px;}
 .sidebar-label:first-child{margin-top:0;}
-.sb-btn{
-  display:flex;align-items:center;gap:9px;
-  padding:9px 11px;border-radius:var(--r);
-  font-size:0.82rem;font-weight:500;color:var(--text2);
-  cursor:none;border:1px solid transparent;background:none;
-  text-align:left;width:100%;transition:all .12s;
-  font-family:'Plus Jakarta Sans',sans-serif;
-}
+.sb-btn{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:var(--r);font-size:0.82rem;font-weight:500;color:var(--text2);cursor:none;border:1px solid transparent;background:none;text-align:left;width:100%;transition:all .12s;font-family:'Plus Jakarta Sans',sans-serif;}
 .sb-btn:hover{background:rgba(255,255,255,0.05);color:var(--text);}
 .sb-btn.active{background:rgba(245,166,35,0.08);color:var(--gold);border-color:rgba(245,166,35,0.2);}
 .sb-btn svg{width:14px;height:14px;flex-shrink:0;opacity:0.7;}
@@ -383,38 +276,29 @@ footer{border-top:1px solid rgba(245,166,35,0.07);padding:2.5rem 1.5rem;text-ali
 .sb-sep{height:1px;background:var(--border);margin:6px 0;}
 .sb-admin{color:var(--danger)!important;}
 .sb-admin.active{background:rgba(255,77,106,0.08)!important;border-color:rgba(255,77,106,0.2)!important;}
- 
-.dash-main{
-  padding:2rem 2rem 2rem;
-  display:flex;flex-direction:column;gap:0;
-  background:radial-gradient(ellipse 60% 50% at 80% 20%,rgba(0,100,160,0.05) 0%,transparent 60%);
-  position:relative;z-index:1;
-}
+.dash-main{padding:2rem 2rem 2rem;display:flex;flex-direction:column;gap:0;background:radial-gradient(ellipse 60% 50% at 80% 20%,rgba(0,100,160,0.05) 0%,transparent 60%);position:relative;z-index:1;}
 .dash-panel{display:none;flex-direction:column;gap:1.25rem;}
 .dash-panel.active{display:flex;}
 .panel-title{font-family:'Nunito',sans-serif;font-size:1.4rem;font-weight:800;letter-spacing:-0.01em;display:flex;align-items:center;gap:10px;margin-bottom:0.25rem;}
 .panel-badge{font-size:0.65rem;font-family:'JetBrains Mono',monospace;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text3);padding:3px 9px;border-radius:10px;}
  
-/* ALL CARDS: fully rounded */
-.card{
-  background:rgba(10,12,20,0.75);
-  border:1px solid var(--border);
-  border-radius:var(--r2);
-  padding:1.35rem;
-  backdrop-filter:blur(8px);
-}
+/* Cards */
+.card{background:rgba(10,12,20,0.75);border:1px solid var(--border);border-radius:var(--r2);padding:1.35rem;backdrop-filter:blur(8px);}
 .card-sm{padding:1rem 1.1rem;border-radius:var(--r);}
 .card-label{font-size:0.65rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:0.5rem;}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.1rem;}
 .big-num{font-family:'JetBrains Mono',monospace;font-size:2.5rem;font-weight:500;color:var(--gold);line-height:1;letter-spacing:-0.03em;}
 .big-num-sub{font-size:0.75rem;color:var(--text2);margin-top:0.3rem;}
-.key-box{display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--r);padding:11px 14px;cursor:none;transition:border-color .2s;margin-top:0.5rem;}
+ 
+/* Key box — wide enough for full loadstring */
+.key-box{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--r);padding:11px 14px;cursor:none;transition:border-color .2s;margin-top:0.5rem;}
 .key-box:hover{border-color:rgba(245,166,35,0.35);}
 .key-box.copied{border-color:var(--success);}
-.key-text{font-family:'JetBrains Mono',monospace;font-size:0.84rem;color:var(--text);word-break:break-all;flex:1;}
-.key-copy-btn{flex-shrink:0;padding:4px 10px;border-radius:8px;background:rgba(255,255,255,0.05);border:1px solid var(--border2);color:var(--text3);font-size:0.7rem;cursor:none;transition:all .12s;white-space:nowrap;font-family:'Plus Jakarta Sans',sans-serif;}
+.key-text{font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text);word-break:break-all;flex:1;line-height:1.5;}
+.key-copy-btn{flex-shrink:0;padding:4px 10px;border-radius:8px;background:rgba(255,255,255,0.05);border:1px solid var(--border2);color:var(--text3);font-size:0.7rem;cursor:none;transition:all .12s;white-space:nowrap;font-family:'Plus Jakarta Sans',sans-serif;margin-top:1px;}
 .key-copy-btn:hover{color:var(--gold);border-color:rgba(245,166,35,0.3);}
+ 
 .prog-bar{height:4px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;margin-top:10px;}
 .prog-fill{height:100%;background:linear-gradient(90deg,var(--gold-dim),var(--gold));border-radius:4px;transition:width .5s ease;}
 .prog-label{font-size:0.7rem;color:var(--text3);margin-top:5px;font-family:'JetBrains Mono',monospace;}
@@ -426,18 +310,7 @@ footer{border-top:1px solid rgba(245,166,35,0.07);padding:2.5rem 1.5rem;text-ali
 .sdot-gray{background:var(--text3);}
 .form-group{display:flex;flex-direction:column;gap:6px;}
 .form-group label{font-size:0.76rem;font-weight:600;color:var(--text2);}
-input[type=text],input[type=number],select{
-  background:rgba(255,255,255,0.04);
-  border:1px solid var(--border);
-  color:var(--text);
-  padding:10px 14px;
-  border-radius:var(--r);
-  font-size:0.875rem;
-  font-family:'Plus Jakarta Sans',sans-serif;
-  outline:none;
-  transition:border-color .15s,box-shadow .15s;
-  width:100%;
-}
+input[type=text],input[type=number],select{background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:var(--r);font-size:0.875rem;font-family:'Plus Jakarta Sans',sans-serif;outline:none;transition:border-color .15s,box-shadow .15s;width:100%;}
 input:focus,select:focus{border-color:rgba(245,166,35,0.4);box-shadow:0 0 0 3px rgba(245,166,35,0.07);}
 input::placeholder{color:var(--text3);}
 select option{background:var(--surface2);}
@@ -464,7 +337,7 @@ select option{background:var(--surface2);}
 .admin-stat .asval{font-family:'Nunito',sans-serif;font-size:1.9rem;font-weight:800;color:var(--gold);letter-spacing:-0.02em;}
 .admin-stat .aslbl{font-size:0.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.12em;margin-top:3px;font-weight:700;}
  
-/* ── MODAL - FULLY ROUNDED ── */
+/* ── MODAL ── */
 .modal-overlay{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:1.5rem;}
 .modal-overlay.open{display:flex;}
 .modal{background:rgba(12,14,22,0.98);border:1px solid rgba(245,166,35,0.15);border-radius:var(--r2);padding:1.75rem;width:100%;max-width:440px;position:relative;animation:modalIn .2s ease;box-shadow:0 40px 80px rgba(0,0,0,0.7),0 0 80px rgba(245,166,35,0.05);}
@@ -511,6 +384,13 @@ select option{background:var(--surface2);}
   .stats-row{margin:3rem auto 0;}
   .orb-1{width:350px;height:250px;}
   .orb-2,.orb-3{width:250px;height:200px;}
+  .nav-right{gap:4px;max-width:calc(100% - 60px);justify-content:flex-end;}
+  .nav-user-pill{padding:3px 8px 3px 6px;gap:6px;}
+  .nav-avatar{width:22px;height:22px;}
+  .nav-username{font-size:0.7rem;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .nav-credits-pill{font-size:0.65rem;padding:3px 8px;}
+  .burger{margin-left:2px;padding:6px;background:rgba(0,0,0,0.2);border-radius:8px;z-index:310;}
+  .burger span{width:18px;height:2px;}
 }
 @media(max-width:480px){
   .hero h1{font-size:2.4rem;}
@@ -520,73 +400,13 @@ select option{background:var(--surface2);}
   .cust-grid{grid-template-columns:1fr;}
   .hero-cta{flex-direction:column;align-items:center;width:100%;}
   .hero-cta .btn{width:100%;max-width:280px;justify-content:center;}
+  .nav-inner{gap:6px;}
+  .nav-logo{font-size:0.85rem;gap:6px;}
+  .vlogo{width:28px;height:28px;}
+  .nav-right{gap:2px;}
+  .nav-username{max-width:60px;}
 }
 @media(hover:none){body{cursor:auto;}#cursor{display:none;}}
-  /* ── FIX MOBILE NAV OVERFLOW WHEN LOGGED IN ── */
-@media (max-width: 768px) {
-  .nav-right {
-    gap: 4px;                         /* reduce spacing */
-    max-width: calc(100% - 60px);     /* leave room for burger */
-    justify-content: flex-end;
-  }
-
-  /* Shrink user pill */
-  .nav-user-pill {
-    padding: 3px 8px 3px 6px;
-    gap: 6px;
-  }
-  .nav-avatar {
-    width: 22px;
-    height: 22px;
-  }
-  .nav-username {
-    font-size: 0.7rem;
-    max-width: 80px;                  /* prevent long usernames */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  /* Shrink credits pill */
-  .nav-credits-pill {
-    font-size: 0.65rem;
-    padding: 3px 8px;
-  }
-
-  /* Make burger always tappable */
-  .burger {
-    margin-left: 2px;
-    padding: 6px;
-    background: rgba(0,0,0,0.2);
-    border-radius: 8px;
-    z-index: 310;
-  }
-  .burger span {
-    width: 18px;
-    height: 2px;
-  }
-}
-
-/* Extra safety for very narrow screens */
-@media (max-width: 480px) {
-  .nav-inner {
-    gap: 6px;
-  }
-  .nav-logo {
-    font-size: 0.85rem;
-    gap: 6px;
-  }
-  .vlogo {
-    width: 28px;
-    height: 28px;
-  }
-  .nav-right {
-    gap: 2px;
-  }
-  .nav-username {
-    max-width: 60px;
-  }
-}
 </style>
 </head>
 <body>
@@ -600,63 +420,34 @@ select option{background:var(--surface2);}
       </radialGradient>
     </defs>
     <g stroke="url(#wg)" fill="none" stroke-width="1">
-      <circle cx="400" cy="400" r="50"/>
-      <circle cx="400" cy="400" r="100"/>
-      <circle cx="400" cy="400" r="150"/>
-      <circle cx="400" cy="400" r="200"/>
-      <circle cx="400" cy="400" r="260"/>
-      <circle cx="400" cy="400" r="320"/>
+      <circle cx="400" cy="400" r="50"/><circle cx="400" cy="400" r="100"/>
+      <circle cx="400" cy="400" r="150"/><circle cx="400" cy="400" r="200"/>
+      <circle cx="400" cy="400" r="260"/><circle cx="400" cy="400" r="320"/>
       <circle cx="400" cy="400" r="385"/>
     </g>
   </svg>
 </div>
  
 <div class="noise-overlay"></div>
- 
-<div id="cursor">
-  <div id="cursor-trail"></div>
-  <div id="cursor-ring"></div>
-  <div id="cursor-dot"></div>
-</div>
+<div id="cursor"><div id="cursor-trail"></div><div id="cursor-ring"></div><div id="cursor-dot"></div></div>
  
 <!-- NAV -->
 <nav>
   <div class="nav-inner">
     <button class="nav-logo" onclick="showPage('home')">
       <div class="vlogo">
-        <!-- Improved Vexis Logo: dark hexagon with layered gold V -->
         <svg viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <linearGradient id="hexGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#1a1410"/>
-              <stop offset="100%" stop-color="#0d0d14"/>
-            </linearGradient>
-            <linearGradient id="goldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#FFD166"/>
-              <stop offset="50%" stop-color="#F5A623"/>
-              <stop offset="100%" stop-color="#C47E10"/>
-            </linearGradient>
-            <linearGradient id="rimGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#FFD166" stop-opacity="0.9"/>
-              <stop offset="60%" stop-color="#F5A623" stop-opacity="0.5"/>
-              <stop offset="100%" stop-color="#C47E10" stop-opacity="0.2"/>
-            </linearGradient>
-            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="1.5" result="blur"/>
-              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
+            <linearGradient id="hexGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a1410"/><stop offset="100%" stop-color="#0d0d14"/></linearGradient>
+            <linearGradient id="goldGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#FFD166"/><stop offset="50%" stop-color="#F5A623"/><stop offset="100%" stop-color="#C47E10"/></linearGradient>
+            <linearGradient id="rimGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFD166" stop-opacity="0.9"/><stop offset="60%" stop-color="#F5A623" stop-opacity="0.5"/><stop offset="100%" stop-color="#C47E10" stop-opacity="0.2"/></linearGradient>
+            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
           </defs>
-          <!-- Outer hex shape -->
           <polygon points="17,1.5 31,9.25 31,24.75 17,32.5 3,24.75 3,9.25" fill="url(#hexGrad)" stroke="url(#rimGrad)" stroke-width="0.8"/>
-          <!-- Inner subtle glow ring -->
           <polygon points="17,4 28.5,10.5 28.5,23.5 17,30 5.5,23.5 5.5,10.5" fill="none" stroke="rgba(245,166,35,0.08)" stroke-width="1"/>
-          <!-- Gold V letterform — wide seriffed style -->
           <g filter="url(#glow)">
-            <!-- Left arm of V -->
             <polygon points="7.5,10 11.5,10 17,22.5 14.5,27" fill="url(#goldGrad)"/>
-            <!-- Right arm of V -->
             <polygon points="26.5,10 22.5,10 17,22.5 19.5,27" fill="url(#goldGrad)"/>
-            <!-- Top serif caps -->
             <rect x="6.5" y="9.5" width="5.5" height="1.5" rx="0.75" fill="#FFD166"/>
             <rect x="22" y="9.5" width="5.5" height="1.5" rx="0.75" fill="#FFD166"/>
           </g>
@@ -664,20 +455,15 @@ select option{background:var(--surface2);}
       </div>
       Vexis Notifier
     </button>
- 
     <div class="nav-center" id="nav-center">
       <button class="nav-btn active" id="nb-home" onclick="navTo('home')">Home</button>
       <button class="nav-btn" id="nb-products" onclick="navTo('products')">Products</button>
       <button class="nav-btn" id="nb-customers" onclick="navTo('customers')">Customers</button>
       <button class="nav-btn" id="nb-dashboard" onclick="navTo('dashboard')" style="display:none;">Dashboard</button>
     </div>
- 
     <div class="nav-right">
       <div id="nav-guest" style="display:flex;align-items:center;gap:8px;">
-        <div style="display:flex;align-items:center;gap:6px;">
-          <span class="live-dot"></span>
-          <span style="font-size:0.7rem;color:var(--text3);">Live</span>
-        </div>
+        <div style="display:flex;align-items:center;gap:6px;"><span class="live-dot"></span><span style="font-size:0.7rem;color:var(--text3);">Live</span></div>
         <a href="/auth/discord" class="btn btn-discord btn-sm">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028 13.953 13.953 0 001.226-1.994.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z"/></svg>
           Login
@@ -689,9 +475,7 @@ select option{background:var(--surface2);}
         <span id="nav-username" class="nav-username"></span>
       </div>
       <span class="nav-credits-pill" id="nav-credits" style="display:none;">0 CR</span>
-      <button class="burger" id="burger" onclick="toggleMob()" aria-label="Menu">
-        <span></span><span></span><span></span>
-      </button>
+      <button class="burger" id="burger" onclick="toggleMob()" aria-label="Menu"><span></span><span></span><span></span></button>
     </div>
   </div>
 </nav>
@@ -709,10 +493,7 @@ select option{background:var(--surface2);}
  
 <!-- HOME -->
 <div id="page-home" class="page active">
-  <div class="glow-orb orb-1"></div>
-  <div class="glow-orb orb-2"></div>
-  <div class="glow-orb orb-3"></div>
- 
+  <div class="glow-orb orb-1"></div><div class="glow-orb orb-2"></div><div class="glow-orb orb-3"></div>
   <div class="ticker-bar">
     <div class="ticker-inner">
       <span class="ticker-item"><strong>PRO</strong> — 6 global slots · $8/hour</span>
@@ -727,7 +508,6 @@ select option{background:var(--surface2);}
       <span class="ticker-item"><strong>UPTIME</strong> — 99.9% · 1B+ notifications sent</span>
     </div>
   </div>
- 
   <div class="hero">
     <div class="hero-eyebrow"><span class="live-dot"></span> Live &nbsp;·&nbsp; <strong>Dream Notifier</strong></div>
     <h1>Dream <em>Brainrots,</em><br>In your reach.</h1>
@@ -739,7 +519,6 @@ select option{background:var(--surface2);}
         Join Discord
       </a>
     </div>
- 
     <div class="hero-preview">
       <div class="hero-preview-inner">
         <div class="pcard"><div class="pcard-label">Pro Tier</div><div class="pcard-val">$8</div><div class="pcard-sub">per hour · 6 global slots</div></div>
@@ -748,79 +527,39 @@ select option{background:var(--surface2);}
         <div class="pcard"><div class="pcard-label">Auth</div><div class="pcard-val" style="font-size:1.4rem;letter-spacing:0;">Discord</div><div class="pcard-sub">OAuth2 · Luarmor HWID lock</div></div>
       </div>
     </div>
- 
-    <!-- ACCURATE CENTERED SLOT DISPLAY -->
     <div class="slots-section" style="padding:0 1.5rem;">
       <div class="slots-header">
         <h2>Live Slot Availability</h2>
-        <p id="home-slots-updated">Updates every 15 seconds</p>
+        <p id="home-slots-updated">Updates every 2 seconds</p>
       </div>
       <div class="slots-cards-row">
-        <!-- PRO SLOTS -->
         <div class="slot-display-card pro-card">
-          <div class="sdc-head">
-            <div class="sdc-title pro">Pro Slots</div>
-            <div class="sdc-badge pro" id="home-pro-badge">Loading…</div>
-          </div>
+          <div class="sdc-head"><div class="sdc-title pro">Pro Slots</div><div class="sdc-badge pro" id="home-pro-badge">Loading…</div></div>
           <div class="slot-dots-wrap">
-            <div class="slot-dots-label">
-              <span>Slot occupancy</span>
-              <span id="home-pro-count-label">—</span>
-            </div>
-            <div class="slot-dots" id="home-pro-dots">
-              <!-- populated by JS -->
-            </div>
+            <div class="slot-dots-label"><span>Slot occupancy</span><span id="home-pro-count-label">—</span></div>
+            <div class="slot-dots" id="home-pro-dots"></div>
           </div>
           <div class="sdc-stats">
-            <div class="sdc-stat">
-              <div class="sdc-stat-val available" id="home-pro-avail">—</div>
-              <div class="sdc-stat-lbl">Available</div>
-            </div>
-            <div class="sdc-stat">
-              <div class="sdc-stat-val full" id="home-pro-taken">—</div>
-              <div class="sdc-stat-lbl">Occupied</div>
-            </div>
-            <div class="sdc-stat">
-              <div class="sdc-stat-val" id="home-pro-next" style="font-size:0.85rem;">—</div>
-              <div class="sdc-stat-lbl">Next Free</div>
-            </div>
+            <div class="sdc-stat"><div class="sdc-stat-val available" id="home-pro-avail">—</div><div class="sdc-stat-lbl">Available</div></div>
+            <div class="sdc-stat"><div class="sdc-stat-val full" id="home-pro-taken">—</div><div class="sdc-stat-lbl">Occupied</div></div>
+            <div class="sdc-stat"><div class="sdc-stat-val" id="home-pro-next" style="font-size:0.85rem;">—</div><div class="sdc-stat-lbl">Next Free</div></div>
           </div>
         </div>
- 
-        <!-- BID SLOTS -->
         <div class="slot-display-card bid-card">
-          <div class="sdc-head">
-            <div class="sdc-title bid">Bid Slots</div>
-            <div class="sdc-badge bid" id="home-bid-badge">Loading…</div>
-          </div>
+          <div class="sdc-head"><div class="sdc-title bid">Bid Slots</div><div class="sdc-badge bid" id="home-bid-badge">Loading…</div></div>
           <div class="slot-dots-wrap">
-            <div class="slot-dots-label">
-              <span>Auction status</span>
-              <span id="home-bid-count-label">—</span>
-            </div>
-            <div class="slot-dots" id="home-bid-dots">
-              <!-- populated by JS -->
-            </div>
+            <div class="slot-dots-label"><span>Auction status</span><span id="home-bid-count-label">—</span></div>
+            <div class="slot-dots" id="home-bid-dots"></div>
           </div>
           <div class="sdc-stats">
-            <div class="sdc-stat">
-              <div class="sdc-stat-val gold" id="home-bid-top">—</div>
-              <div class="sdc-stat-lbl">Top Bid</div>
-            </div>
-            <div class="sdc-stat">
-              <div class="sdc-stat-val" id="home-bid-timer" style="font-size:0.85rem;color:var(--danger);">—</div>
-              <div class="sdc-stat-lbl">Ends In</div>
-            </div>
-            <div class="sdc-stat">
-              <div class="sdc-stat-val" id="home-bid-prize" style="color:var(--gold);">2h</div>
-              <div class="sdc-stat-lbl">Prize</div>
-            </div>
+            <div class="sdc-stat"><div class="sdc-stat-val gold" id="home-bid-top">—</div><div class="sdc-stat-lbl">Top Bid</div></div>
+            <div class="sdc-stat"><div class="sdc-stat-val" id="home-bid-timer" style="font-size:0.85rem;color:var(--danger);">—</div><div class="sdc-stat-lbl">Ends In</div></div>
+            <div class="sdc-stat"><div class="sdc-stat-val" id="home-bid-prize" style="color:var(--gold);">2h</div><div class="sdc-stat-lbl">Prize</div></div>
           </div>
         </div>
       </div>
     </div>
   </div>
- 
   <div style="padding:0 1.5rem;display:flex;justify-content:center;">
     <div class="stats-row" style="width:100%;">
       <div class="stat-cell"><div class="val">4k+</div><div class="lbl">Unique Users</div></div>
@@ -829,14 +568,10 @@ select option{background:var(--surface2);}
       <div class="stat-cell"><div class="val">1B+</div><div class="lbl">Notifies Sent</div></div>
     </div>
   </div>
- 
   <footer>
     <div class="footer-logo">
       <svg width="20" height="20" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="fhg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a1410"/><stop offset="100%" stop-color="#0d0d14"/></linearGradient>
-          <linearGradient id="fgg" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#FFD166"/><stop offset="100%" stop-color="#C47E10"/></linearGradient>
-        </defs>
+        <defs><linearGradient id="fhg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a1410"/><stop offset="100%" stop-color="#0d0d14"/></linearGradient><linearGradient id="fgg" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#FFD166"/><stop offset="100%" stop-color="#C47E10"/></linearGradient></defs>
         <polygon points="17,1.5 31,9.25 31,24.75 17,32.5 3,24.75 3,9.25" fill="url(#fhg)" stroke="rgba(245,166,35,0.5)" stroke-width="0.8"/>
         <polygon points="7.5,10 11.5,10 17,22.5 14.5,27" fill="url(#fgg)"/>
         <polygon points="26.5,10 22.5,10 17,22.5 19.5,27" fill="url(#fgg)"/>
@@ -857,95 +592,44 @@ select option{background:var(--surface2);}
       <button class="notify-link" onclick="toast('You will be notified when a slot frees up.','info')">Notify me when slots free up</button>
     </div>
     <div class="plan-cards">
-      <!-- PRO -->
       <div class="plan-card" id="pro-plan-card">
         <div class="plan-card-head">
           <div class="plan-card-name pro">PRO</div>
-          <div class="plan-row">
-            <div class="plan-row-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/></svg>Access to:</div>
-            <div class="plan-row-val">ALL</div>
-          </div>
-          <div class="plan-row">
-            <div class="plan-row-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Max Generation:</div>
-            <div class="plan-row-val">NONE</div>
-          </div>
-          <div class="plan-row">
-            <div class="plan-row-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Delay:</div>
-            <div class="plan-row-val">0s</div>
-          </div>
+          <div class="plan-row"><div class="plan-row-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/></svg>Access to:</div><div class="plan-row-val">ALL</div></div>
+          <div class="plan-row"><div class="plan-row-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Max Generation:</div><div class="plan-row-val">NONE</div></div>
+          <div class="plan-row"><div class="plan-row-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Delay:</div><div class="plan-row-val">0s</div></div>
           <div class="plan-row">
             <div class="plan-row-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Available Slots:</div>
-            <div class="slot-bar-wrap" style="flex:1;margin-left:12px;text-align:right;">
-              <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;">
-                <div style="flex:1;max-width:80px;"><div class="slot-bar"><div class="slot-bar-fill red" id="pro-plan-bar" style="width:17%"></div></div></div>
-                <div class="plan-row-val red" id="pro-plan-slots">1/6</div>
-              </div>
-            </div>
+            <div class="slot-bar-wrap" style="flex:1;margin-left:12px;text-align:right;"><div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;"><div style="flex:1;max-width:80px;"><div class="slot-bar"><div class="slot-bar-fill red" id="pro-plan-bar" style="width:17%"></div></div></div><div class="plan-row-val red" id="pro-plan-slots">1/6</div></div></div>
           </div>
         </div>
-        <div class="plan-card-mid">
-          <div class="plan-next-label">&#8635; NEXT SLOT AVAILABLE IN:</div>
-          <div class="plan-next-val" id="pro-plan-next">—</div>
-        </div>
+        <div class="plan-card-mid"><div class="plan-next-label">&#8635; NEXT SLOT AVAILABLE IN:</div><div class="plan-next-val" id="pro-plan-next">—</div></div>
         <div class="plan-price-row">
           <div class="plan-price-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Price:</div>
-          <div class="plan-price-val">
-            <div class="plan-price-big">$8/hour</div>
-            <div class="plan-price-sub">billed per hour</div>
-          </div>
+          <div class="plan-price-val"><div class="plan-price-big">$8/hour</div><div class="plan-price-sub">billed per hour</div></div>
         </div>
-        <div class="plan-card-foot">
-          <button class="plan-cta purchase" id="pro-plan-cta" onclick="handleProPurchase()">PURCHASE ACCESS</button>
-        </div>
+        <div class="plan-card-foot"><button class="plan-cta purchase" id="pro-plan-cta" onclick="handleProPurchase()">PURCHASE ACCESS</button></div>
       </div>
- 
-      <!-- BID -->
       <div class="plan-card" id="bid-plan-card">
         <div class="plan-card-head">
           <div class="plan-card-name bid">BID</div>
-          <div class="plan-row">
-            <div class="plan-row-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/></svg>Access to:</div>
-            <div class="plan-row-val">1b+, 100m+, 10m+</div>
-          </div>
-          <div class="plan-row">
-            <div class="plan-row-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Max Generation:</div>
-            <div class="plan-row-val">10B</div>
-          </div>
-          <div class="plan-row">
-            <div class="plan-row-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Delay:</div>
-            <div class="plan-row-val">0s</div>
-          </div>
+          <div class="plan-row"><div class="plan-row-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/></svg>Access to:</div><div class="plan-row-val">1b+, 100m+, 10m+</div></div>
+          <div class="plan-row"><div class="plan-row-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Max Generation:</div><div class="plan-row-val">10B</div></div>
+          <div class="plan-row"><div class="plan-row-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Delay:</div><div class="plan-row-val">0s</div></div>
           <div class="plan-row">
             <div class="plan-row-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Available Slots:</div>
-            <div class="slot-bar-wrap" style="flex:1;margin-left:12px;text-align:right;">
-              <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;">
-                <div style="flex:1;max-width:80px;"><div class="slot-bar"><div class="slot-bar-fill red" id="bid-plan-bar" style="width:0%"></div></div></div>
-                <div class="plan-row-val gold" id="bid-plan-slots">0/1</div>
-              </div>
-            </div>
+            <div class="slot-bar-wrap" style="flex:1;margin-left:12px;text-align:right;"><div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;"><div style="flex:1;max-width:80px;"><div class="slot-bar"><div class="slot-bar-fill red" id="bid-plan-bar" style="width:0%"></div></div></div><div class="plan-row-val gold" id="bid-plan-slots">0/2</div></div></div>
           </div>
         </div>
         <div class="plan-card-mid">
-          <div style="display:flex;align-items:center;justify-content:space-between;">
-            <div>
-              <div class="plan-next-label">&#9889; AUCTION ENDS IN:</div>
-              <div class="plan-next-val" id="bid-plan-timer">—</div>
-            </div>
-          </div>
-          <div style="margin-top:0.75rem;">
-            <div class="plan-bid-amount"><span>Current Bid:</span><span class="plan-bid-price" id="bid-plan-current">$0.00</span></div>
-          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;"><div><div class="plan-next-label">&#9889; AUCTION ENDS IN:</div><div class="plan-next-val" id="bid-plan-timer">—</div></div></div>
+          <div style="margin-top:0.75rem;"><div class="plan-bid-amount"><span>Current Bid:</span><span class="plan-bid-price" id="bid-plan-current">$0.00</span></div></div>
         </div>
         <div class="plan-price-row">
           <div class="plan-price-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>Current Bid:</div>
-          <div class="plan-price-val">
-            <div class="plan-price-big" id="bid-plan-price-big">$0.00</div>
-            <div class="plan-price-sub">min $16 to start</div>
-          </div>
+          <div class="plan-price-val"><div class="plan-price-big" id="bid-plan-price-big">$0.00</div><div class="plan-price-sub">min $16 to start</div></div>
         </div>
-        <div class="plan-card-foot">
-          <button class="plan-cta bid-btn" id="bid-plan-cta" onclick="handleBidPurchase()">PLACE BID</button>
-        </div>
+        <div class="plan-card-foot"><button class="plan-cta bid-btn" id="bid-plan-cta" onclick="handleBidPurchase()">PLACE BID</button></div>
       </div>
     </div>
   </div>
@@ -954,22 +638,13 @@ select option{background:var(--surface2);}
 <!-- CUSTOMERS -->
 <div id="page-customers" class="page">
   <div class="customers-wrap">
-    <div class="customers-header">
-      <h1>Active Slots</h1>
-      <p>Who currently holds a Pro or Bid slot — updates every 15 seconds.</p>
-    </div>
+    <div class="customers-header"><h1>Active Slots</h1><p>Who currently holds a Pro or Bid slot — updates every 2 seconds.</p></div>
     <div class="cust-section">
-      <div class="cust-section-title">
-        <span style="color:var(--danger);">●</span> Pro Slots
-        <span style="font-size:0.72rem;color:var(--text3);font-family:'JetBrains Mono',monospace;" id="cust-pro-count"></span>
-      </div>
+      <div class="cust-section-title"><span style="color:var(--danger);">●</span> Pro Slots<span style="font-size:0.72rem;color:var(--text3);font-family:'JetBrains Mono',monospace;" id="cust-pro-count"></span></div>
       <div class="cust-grid" id="cust-pro-grid"></div>
     </div>
     <div class="cust-section">
-      <div class="cust-section-title">
-        <span style="color:var(--gold);">●</span> Bid Slots
-        <span style="font-size:0.72rem;color:var(--text3);font-family:'JetBrains Mono',monospace;" id="cust-bid-count"></span>
-      </div>
+      <div class="cust-section-title"><span style="color:var(--gold);">●</span> Bid Slots<span style="font-size:0.72rem;color:var(--text3);font-family:'JetBrains Mono',monospace;" id="cust-bid-count"></span></div>
       <div class="cust-grid" id="cust-bid-grid"></div>
     </div>
   </div>
@@ -980,56 +655,25 @@ select option{background:var(--surface2);}
   <div class="dash-wrap">
     <aside class="sidebar">
       <div class="sidebar-label">Menu</div>
-      <button class="sb-btn active" id="sbtn-overview" onclick="showTab('overview')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>
-        Overview
-      </button>
-      <button class="sb-btn" id="sbtn-pro" onclick="showTab('pro')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-        Pro Slot
-      </button>
-      <button class="sb-btn" id="sbtn-bid" onclick="showTab('bid')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/></svg>
-        Bid Slots
-      </button>
-      <button class="sb-btn" id="sbtn-credits" onclick="showTab('credits')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="3"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-        Buy Credits
-      </button>
-      <button class="sb-btn" id="sbtn-transfer" onclick="showTab('transfer')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 01-4 4H3"/></svg>
-        Transfer
-      </button>
+      <button class="sb-btn active" id="sbtn-overview" onclick="showTab('overview')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>Overview</button>
+      <button class="sb-btn" id="sbtn-pro" onclick="showTab('pro')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Pro Slot</button>
+      <button class="sb-btn" id="sbtn-bid" onclick="showTab('bid')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/></svg>Bid Slots</button>
+      <button class="sb-btn" id="sbtn-credits" onclick="showTab('credits')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="3"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Buy Credits</button>
+      <button class="sb-btn" id="sbtn-transfer" onclick="showTab('transfer')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 01-4 4H3"/></svg>Transfer</button>
       <div class="sb-sep" id="admin-sep" style="display:none;"></div>
-      <button class="sb-btn sb-admin" id="sbtn-admin" onclick="showTab('admin')" style="display:none;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        Admin
-      </button>
+      <button class="sb-btn sb-admin" id="sbtn-admin" onclick="showTab('admin')" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Admin</button>
     </aside>
     <main class="dash-main">
       <!-- OVERVIEW -->
       <section class="dash-panel active" id="panel-overview">
         <div class="panel-title">Overview</div>
         <div class="g3">
-          <div class="card">
-            <div class="card-label">Your Balance</div>
-            <div class="big-num" id="ov-credits">0</div>
-            <div class="big-num-sub">Credits · $1 = 1 credit</div>
-            <button class="btn btn-gold btn-sm" style="margin-top:1rem;" onclick="showTab('credits')">Buy Credits</button>
-          </div>
-          <div class="card">
-            <div class="card-label">Pro Slot</div>
-            <div class="status-pill" id="ov-pro-status"><span class="sdot sdot-gray"></span> No active slot</div>
-            <div id="ov-pro-expiry"></div>
-          </div>
-          <div class="card">
-            <div class="card-label">Bid Slot</div>
-            <div class="status-pill" id="ov-bid-status"><span class="sdot sdot-gray"></span> No active slot</div>
-            <div id="ov-bid-expiry"></div>
-          </div>
+          <div class="card"><div class="card-label">Your Balance</div><div class="big-num" id="ov-credits">0</div><div class="big-num-sub">Credits · $1 = 1 credit</div><button class="btn btn-gold btn-sm" style="margin-top:1rem;" onclick="showTab('credits')">Buy Credits</button></div>
+          <div class="card"><div class="card-label">Pro Slot</div><div class="status-pill" id="ov-pro-status"><span class="sdot sdot-gray"></span> No active slot</div><div id="ov-pro-expiry"></div></div>
+          <div class="card"><div class="card-label">Bid Slot</div><div class="status-pill" id="ov-bid-status"><span class="sdot sdot-gray"></span> No active slot</div><div id="ov-bid-expiry"></div></div>
         </div>
         <div class="card" id="ov-key-card" style="display:none;">
-          <div class="card-label" id="ov-key-label">Active Key</div>
+          <div class="card-label" id="ov-key-label">Active Loadstring</div>
           <div class="key-box" id="ov-key-box" onclick="copyKeyBox('ov-key-box','ov-key-text')">
             <span class="key-text" id="ov-key-text">—</span>
             <span class="key-copy-btn">Copy</span>
@@ -1040,14 +684,8 @@ select option{background:var(--surface2);}
         <div class="card">
           <div class="card-label">Global Capacity</div>
           <div class="g2" style="margin-top:0.75rem;">
-            <div>
-              <div style="font-size:0.76rem;color:var(--text2);margin-bottom:0.5rem;">Pro Slots <span id="pro-cap-label" style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:0.7rem;"></span></div>
-              <div class="cap-row" id="pro-cap-dots"></div>
-            </div>
-            <div>
-              <div style="font-size:0.76rem;color:var(--text2);margin-bottom:0.5rem;">Bid Slots</div>
-              <div class="cap-row" id="bid-cap-dots"></div>
-            </div>
+            <div><div style="font-size:0.76rem;color:var(--text2);margin-bottom:0.5rem;">Pro Slots <span id="pro-cap-label" style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:0.7rem;"></span></div><div class="cap-row" id="pro-cap-dots"></div></div>
+            <div><div style="font-size:0.76rem;color:var(--text2);margin-bottom:0.5rem;">Bid Slots</div><div class="cap-row" id="bid-cap-dots"></div></div>
           </div>
         </div>
       </section>
@@ -1056,7 +694,7 @@ select option{background:var(--surface2);}
       <section class="dash-panel" id="panel-pro">
         <div class="panel-title">Pro Slot <span class="panel-badge">$8/hr</span></div>
         <div class="card" id="pro-active-card" style="display:none;">
-          <div class="card-label">Your Active Key</div>
+          <div class="card-label">Your Loadstring — paste this in Roblox</div>
           <div class="key-box" id="pro-key-box" onclick="copyKeyBox('pro-key-box','pro-key-text')">
             <span class="key-text" id="pro-key-text">—</span>
             <span class="key-copy-btn">Copy</span>
@@ -1065,7 +703,7 @@ select option{background:var(--surface2);}
           <div class="prog-label" id="pro-prog-label">—</div>
           <div style="display:flex;gap:8px;margin-top:1rem;flex-wrap:wrap;">
             <button class="btn btn-ghost btn-sm" onclick="resetHWID('pro')">Reset HWID</button>
-            <button class="btn btn-ghost btn-sm" onclick="copyKeyBox('pro-key-box','pro-key-text')">Copy Key</button>
+            <button class="btn btn-ghost btn-sm" onclick="copyKeyBox('pro-key-box','pro-key-text')">Copy Loadstring</button>
           </div>
         </div>
         <div class="card" id="pro-inactive-card">
@@ -1086,7 +724,7 @@ select option{background:var(--surface2);}
           <div class="card-label">Key History</div>
           <div style="overflow-x:auto;margin-top:0.75rem;">
             <table class="data-table" id="pro-history-table">
-              <thead><tr><th>Key</th><th>Credits</th><th>Activated</th><th>Status</th></tr></thead>
+              <thead><tr><th>Loadstring</th><th>Credits</th><th>Activated</th><th>Status</th></tr></thead>
               <tbody></tbody>
             </table>
           </div>
@@ -1098,7 +736,7 @@ select option{background:var(--surface2);}
         <div class="panel-title">Bid Slots <span class="panel-badge">$16 min · 2hr prize</span></div>
         <div class="g2" id="bid-slots-grid"></div>
         <div class="card" id="bid-key-card" style="display:none;">
-          <div class="card-label">Your Active Bid Key</div>
+          <div class="card-label">Your Active Loadstring — paste this in Roblox</div>
           <div class="key-box" id="bid-key-box" onclick="copyKeyBox('bid-key-box','bid-key-text')">
             <span class="key-text" id="bid-key-text">—</span>
             <span class="key-copy-btn">Copy</span>
@@ -1107,7 +745,7 @@ select option{background:var(--surface2);}
           <div class="prog-label" id="bid-prog-label">—</div>
           <div style="display:flex;gap:8px;margin-top:1rem;flex-wrap:wrap;">
             <button class="btn btn-ghost btn-sm" onclick="resetHWID('bid')">Reset HWID</button>
-            <button class="btn btn-ghost btn-sm" onclick="copyKeyBox('bid-key-box','bid-key-text')">Copy Key</button>
+            <button class="btn btn-ghost btn-sm" onclick="copyKeyBox('bid-key-box','bid-key-text')">Copy Loadstring</button>
           </div>
         </div>
       </section>
@@ -1119,12 +757,7 @@ select option{background:var(--surface2);}
           <p style="font-size:0.83rem;color:var(--text2);margin-bottom:1.25rem;">$1 = 1 Credit. Credits never expire. Minimum $1.</p>
           <div class="g2" style="align-items:end;gap:1rem;">
             <div class="form-group"><label>Amount (USD)</label><input type="number" id="buy-amount" placeholder="e.g. 50" min="1"></div>
-            <div class="form-group"><label>Cryptocurrency</label>
-              <select id="buy-coin">
-                <option value="btc">Bitcoin (BTC)</option>
-                <option value="ltc">Litecoin (LTC)</option>
-              </select>
-            </div>
+            <div class="form-group"><label>Cryptocurrency</label><select id="buy-coin"><option value="btc">Bitcoin (BTC)</option><option value="ltc">Litecoin (LTC)</option></select></div>
           </div>
           <button class="btn btn-gold" style="margin-top:1.1rem;" onclick="createPayment()">Generate Invoice</button>
         </div>
@@ -1226,9 +859,7 @@ select option{background:var(--surface2);}
 <script>
 // ── CURSOR ──
 (function(){
-  const dot=document.getElementById('cursor-dot');
-  const ring=document.getElementById('cursor-ring');
-  const trail=document.getElementById('cursor-trail');
+  const dot=document.getElementById('cursor-dot'),ring=document.getElementById('cursor-ring'),trail=document.getElementById('cursor-trail');
   if(!dot||!ring)return;
   let mx=0,my=0,rx=0,ry=0,tx=0,ty=0;
   document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
@@ -1242,34 +873,45 @@ select option{background:var(--surface2);}
 })();
  
 // ── STATE ──
-let me=null,status=null,currentBidSlot=null,adminTarget=null,currentPage='home';
+let me=null,status=null,currentBidSlot=null,adminTarget=null,currentPage='home',currentTab='overview';
 const bidTimers={};
-let homeBidTimerInterval=null;
+let homeBidTimerInterval=null,productBidTimerInterval=null;
+ 
+// ── LOADSTRING HELPER ──
+function toLoadstring(key){
+  if(!key||key==='—')return key;
+  // If server already returned a loadstring, use it directly.
+  // Otherwise build it client-side as fallback.
+  return `loadstring(game:HttpGet("https://luarmor.net/fetch?key=${key}"))()`;
+}
  
 // ── INIT ──
 async function init(){
+  // Determine target page from URL before any fetch
+  const path=window.location.pathname;
+  let targetPage='home';
+  if(path.startsWith('/dashboard'))targetPage='dashboard';
+  else if(path==='/products')targetPage='products';
+  else if(path==='/customers')targetPage='customers';
+ 
   try{
     const r=await fetch('/api/me');
     if(r.ok){
       me=await r.json();
       applyUser();
-      const path=window.location.pathname;
-      if(path.startsWith('/dashboard'))navTo('dashboard');
-      else if(path==='/products')navTo('products');
-      else if(path==='/customers')navTo('customers');
-      else navTo('home');
-      await refreshAll();
-    }else{
-      const path=window.location.pathname;
-      if(path==='/products')navTo('products');
-      else if(path==='/customers')navTo('customers');
-      else{navTo('home');await fetchStatus();}
     }
-  }catch{navTo('home');await fetchStatus();}
+  }catch{}
+ 
+  // Always fetch status before first render
+  await fetchStatus();
+  navTo(targetPage);
+ 
+  // Only start polling loop after init
+  setInterval(refreshAll,2000);
 }
  
 async function fetchStatus(){
-  try{const r=await fetch('/api/status');if(r.ok){status=await r.json();renderHomeSlotsDisplay();updateProductsPage();}}catch{}
+  try{const r=await fetch('/api/status');if(r.ok)status=await r.json();}catch{}
 }
  
 function applyUser(){
@@ -1277,7 +919,9 @@ function applyUser(){
   const nu=document.getElementById('nav-user');nu.style.display='flex';
   document.getElementById('nav-username').textContent=me.username;
   const cr=document.getElementById('nav-credits');cr.style.display='block';cr.textContent=me.credits+' CR';
-  const av=me.avatar?`https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.png?size=64`:`https://cdn.discordapp.com/embed/avatars/${parseInt(me.discriminator||'0')%5}.png`;
+  const av=me.avatar
+    ?`https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.png?size=64`
+    :`https://cdn.discordapp.com/embed/avatars/${parseInt(me.discriminator||'0')%5}.png`;
   document.getElementById('nav-avatar').src=av;
   document.getElementById('nb-dashboard').style.display='block';
   document.getElementById('mob-dashboard-btn').style.display='block';
@@ -1292,14 +936,18 @@ function navTo(page){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+page)?.classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  const nb=document.getElementById('nb-'+page);if(nb)nb.classList.add('active');
+  document.getElementById('nb-'+page)?.classList.add('active');
   document.querySelectorAll('.mob-btn').forEach(b=>b.classList.remove('mob-active'));
-  const mb=document.getElementById('mob-'+page);if(mb)mb.classList.add('mob-active');
+  document.getElementById('mob-'+page)?.classList.add('mob-active');
   const paths={home:'/',products:'/products',customers:'/customers',dashboard:'/dashboard'};
-  history.pushState({},'',(paths[page]||'/'));
-  if(page==='customers')renderCustomers();
-  if(page==='products')updateProductsPage();
-  if(page==='home')renderHomeSlotsDisplay();
+  history.pushState({},'',paths[page]||'/');
+  // Render relevant content immediately
+  if(status){
+    if(page==='customers')renderCustomers();
+    if(page==='products')updateProductsPage();
+    if(page==='home')renderHomeSlotsDisplay();
+    if(page==='dashboard'){renderOverview();renderProPanel();renderBidPanel();}
+  }
 }
 function showPage(p){navTo(p);}
 function toggleMob(){
@@ -1307,28 +955,33 @@ function toggleMob(){
   document.getElementById('burger').classList.toggle('open');
 }
  
-// ── REFRESH ──
+// ── REFRESH (called every 2s) ──
 async function refreshAll(){
   try{
     const reqs=[fetch('/api/status')];
     if(me)reqs.push(fetch('/api/me'));
     const results=await Promise.all(reqs);
-    if(results[0].ok)status=await results[0].json();
-    if(me&&results[1]?.ok){me=await results[1].json();document.getElementById('nav-credits').textContent=me.credits+' CR';}
+    if(results[0].ok){status=await results[0].json();}
+    if(me&&results[1]?.ok){
+      me=await results[1].json();
+      document.getElementById('nav-credits').textContent=me.credits+' CR';
+    }
+    // Re-render whatever page is active
     renderHomeSlotsDisplay();
-    renderOverview();renderProPanel();renderBidPanel();
     updateProductsPage();
     if(currentPage==='customers')renderCustomers();
-  }catch(e){console.error(e);}
+    if(me&&currentPage==='dashboard'){
+      renderOverview();
+      if(currentTab==='pro')renderProPanel();
+      if(currentTab==='bid')renderBidPanel();
+    }
+  }catch(e){console.warn('Refresh error:',e);}
 }
  
-// ── HOME SLOTS DISPLAY (accurate + centered) ──
+// ── HOME SLOTS DISPLAY ──
 function renderHomeSlotsDisplay(){
   if(!status)return;
- 
-  // PRO
-  const proActive=status.pro?.active||0;
-  const proMax=status.pro?.max||6;
+  const proActive=status.pro?.active||0,proMax=status.pro?.max||6;
   const proSlots=status.pro?.slots||[];
   const proAvail=proMax-proActive;
  
@@ -1337,31 +990,27 @@ function renderHomeSlotsDisplay(){
   document.getElementById('home-pro-avail').textContent=proAvail;
   document.getElementById('home-pro-avail').className='sdc-stat-val '+(proAvail>0?'available':'full');
   document.getElementById('home-pro-taken').textContent=proActive;
-  document.getElementById('home-pro-next').textContent=status.pro?.nextFreeIn?formatTime(status.pro.nextFreeIn):proAvail>0?'Now':'—';
+  document.getElementById('home-pro-next').textContent=
+    status.pro?.nextFreeIn?formatTime(status.pro.nextFreeIn):proAvail>0?'Now':'—';
  
-  // Render per-slot dots with real data
   const proDots=document.getElementById('home-pro-dots');
   proDots.innerHTML='';
   for(let i=1;i<=proMax;i++){
-    const slotData=proSlots.find(s=>s.slotIndex===i);
+    const slotData=proSlots[i-1];
     const el=document.createElement('div');
     el.className='sdot-block '+(slotData?.userId?'occupied':'empty');
-    if(slotData?.username){
-      el.title=slotData.username;
-      el.textContent=slotData.username[0]?.toUpperCase()||'#';
-    }else{
-      el.textContent=i;
-    }
+    el.textContent=slotData?.userId?(slotData.username||'#')[0].toUpperCase():i;
+    if(slotData?.username)el.title=slotData.username;
     proDots.appendChild(el);
   }
  
-  // BID
   const bidSlots=status.bid||[];
   const liveBid=bidSlots.find(b=>b.status==='live');
   const occupiedBids=bidSlots.filter(b=>b.status==='live'||b.status==='cooldown').length;
   const topBidAmt=liveBid?.topBid?.amount||0;
  
-  document.getElementById('home-bid-badge').textContent=occupiedBids===bidSlots.length?'ACTIVE':occupiedBids===0?'OPEN':`${occupiedBids}/${bidSlots.length} LIVE`;
+  document.getElementById('home-bid-badge').textContent=
+    occupiedBids===bidSlots.length?'ACTIVE':occupiedBids===0?'OPEN':`${occupiedBids}/${bidSlots.length} LIVE`;
   document.getElementById('home-bid-count-label').textContent=`${occupiedBids}/${bidSlots.length} active`;
   document.getElementById('home-bid-top').textContent=topBidAmt?`${topBidAmt} CR`:'None';
  
@@ -1378,7 +1027,6 @@ function renderHomeSlotsDisplay(){
     bidDots.appendChild(el);
   });
  
-  // Bid timer
   if(liveBid?.endsAt){
     if(homeBidTimerInterval)clearInterval(homeBidTimerInterval);
     const el=document.getElementById('home-bid-timer');
@@ -1388,9 +1036,7 @@ function renderHomeSlotsDisplay(){
     document.getElementById('home-bid-timer').textContent=occupiedBids>0?'Active':'No auction';
   }
  
-  // Update live stats counter
-  const totalActive=proActive+occupiedBids;
-  document.getElementById('stat-active-subs').textContent=totalActive||26;
+  document.getElementById('stat-active-subs').textContent=(proActive+occupiedBids)||26;
 }
  
 // ── PRODUCTS PAGE ──
@@ -1402,8 +1048,9 @@ function updateProductsPage(){
   document.getElementById('pro-plan-bar').style.width=proPct+'%';
   document.getElementById('pro-plan-bar').className='slot-bar-fill '+(proActive>=proMax?'red':'green');
   document.getElementById('pro-plan-slots').className='plan-row-val '+(proActive>=proMax?'red':'green');
-  if(status.pro?.nextFreeIn)document.getElementById('pro-plan-next').textContent=formatTime(status.pro.nextFreeIn);
-  else document.getElementById('pro-plan-next').textContent=proActive<proMax?'Available now':'—';
+  document.getElementById('pro-plan-next').textContent=
+    status.pro?.nextFreeIn?formatTime(status.pro.nextFreeIn):proActive<proMax?'Available now':'—';
+ 
   const bid=status.bid||[];
   const liveBid=bid.find(b=>b.status==='live');
   const topAmt=liveBid?.topBid?.amount||0;
@@ -1417,34 +1064,47 @@ function updateProductsPage(){
   document.getElementById('bid-plan-bar').className='slot-bar-fill '+(bidActive>=bidMax?'red':'gold');
   if(liveBid?.endsAt)startProductsBidTimer(liveBid.endsAt);
   else document.getElementById('bid-plan-timer').textContent='No active auction';
+ 
   if(me){
     document.getElementById('pro-plan-cta').textContent=me.proSlot?'MANAGE SLOT':'PURCHASE ACCESS';
     document.getElementById('bid-plan-cta').textContent=me.bidSlot?'VIEW YOUR KEY':'PLACE BID';
   }
 }
  
-let productBidTimerInterval=null;
 function startProductsBidTimer(endsAt){
   if(productBidTimerInterval)clearInterval(productBidTimerInterval);
   const el=document.getElementById('bid-plan-timer');
-  function tick(){const left=endsAt-Date.now();if(left<=0){clearInterval(productBidTimerInterval);el.textContent='Ending…';refreshAll();return;}el.textContent=formatTime(left);}
+  function tick(){const left=endsAt-Date.now();if(left<=0){clearInterval(productBidTimerInterval);el.textContent='Ending…';return;}el.textContent=formatTime(left);}
   tick();productBidTimerInterval=setInterval(tick,1000);
 }
-function handleProPurchase(){if(!me){window.location.href='/auth/discord';return;}if(me.proSlot){navTo('dashboard');showTab('pro');return;}navTo('dashboard');showTab('credits');}
-function handleBidPurchase(){if(!me){window.location.href='/auth/discord';return;}if(me.bidSlot){navTo('dashboard');showTab('bid');return;}const liveBid=status?.bid?.find(b=>b.status!=='cooldown');if(liveBid)openBidModal(liveBid.slotIndex);else{navTo('dashboard');showTab('bid');}}
+ 
+function handleProPurchase(){
+  if(!me){window.location.href='/auth/discord';return;}
+  if(me.proSlot){navTo('dashboard');showTab('pro');return;}
+  navTo('dashboard');showTab('credits');
+}
+function handleBidPurchase(){
+  if(!me){window.location.href='/auth/discord';return;}
+  if(me.bidSlot){navTo('dashboard');showTab('bid');return;}
+  const liveBid=status?.bid?.find(b=>b.status!=='cooldown'&&b.status!=='ended');
+  if(liveBid)openBidModal(liveBid.slotIndex);
+  else{navTo('dashboard');showTab('bid');}
+}
  
 // ── CUSTOMERS ──
 function renderCustomers(){
   if(!status)return;
   const proMax=status.pro?.max||6,proSlots=status.pro?.slots||[];
-  document.getElementById('cust-pro-count').textContent=`${proSlots.length}/${proMax} occupied`;
+  document.getElementById('cust-pro-count').textContent=` ${proSlots.length}/${proMax} occupied`;
   const proGrid=document.getElementById('cust-pro-grid');proGrid.innerHTML='';
   for(let i=1;i<=proMax;i++){
-    const slot=proSlots.find(s=>s.slotIndex===i)||proSlots[i-1];
+    const slot=proSlots[i-1];
     const el=document.createElement('div');
-    if(slot&&slot.userId){
+    if(slot?.userId){
       el.className='cust-slot taken';
-      const av=slot.avatar?`<img class="cust-avatar" src="https://cdn.discordapp.com/avatars/${slot.userId}/${slot.avatar}.png?size=64" onerror="this.style.display='none'">`:`<div class="cust-avatar-empty">${(slot.username||'?')[0].toUpperCase()}</div>`;
+      const av=slot.avatar
+        ?`<img class="cust-avatar" src="https://cdn.discordapp.com/avatars/${slot.userId}/${slot.avatar}.png?size=64" onerror="this.style.display='none'">`
+        :`<div class="cust-avatar-empty">${(slot.username||'?')[0].toUpperCase()}</div>`;
       const expiry=slot.expiry?`${formatTime(slot.expiry-Date.now())} left`:'Active';
       el.innerHTML=`<div class="cust-slot-num">SLOT ${i}</div>${av}<div class="cust-info"><div class="cust-name">${slot.username||'Unknown'}</div><div class="cust-meta">${expiry}</div></div><div class="cust-badge"><span class="tag tag-green">ACTIVE</span></div>`;
     }else{
@@ -1454,15 +1114,17 @@ function renderCustomers(){
     proGrid.appendChild(el);
   }
   const bidSlots=status.bid||[];
-  document.getElementById('cust-bid-count').textContent=`${bidSlots.filter(b=>b.status==='live'||b.status==='cooldown').length}/${bidSlots.length} occupied`;
+  document.getElementById('cust-bid-count').textContent=` ${bidSlots.filter(b=>b.status==='live'||b.status==='cooldown').length}/${bidSlots.length} occupied`;
   const bidGrid=document.getElementById('cust-bid-grid');bidGrid.innerHTML='';
   bidSlots.forEach((b,i)=>{
     const el=document.createElement('div');
     const isLive=b.status==='live',isCool=b.status==='cooldown';
     if(isLive||isCool){
       el.className='cust-slot '+(isLive?'live':'taken');
-      const winner=b.winner||b.topBid;
-      const av=winner?.avatar?`<img class="cust-avatar" src="https://cdn.discordapp.com/avatars/${winner.userId}/${winner.avatar}.png?size=64">`:`<div class="cust-avatar-empty">${(winner?.username||'?')[0]?.toUpperCase()||'?'}</div>`;
+      const winner=b.topBid;
+      const av=winner?.avatar
+        ?`<img class="cust-avatar" src="https://cdn.discordapp.com/avatars/${winner.userId}/${winner.avatar}.png?size=64">`
+        :`<div class="cust-avatar-empty">${(winner?.username||'?')[0]?.toUpperCase()||'?'}</div>`;
       el.innerHTML=`<div class="cust-slot-num">BID ${i+1}</div>${av}<div class="cust-info"><div class="cust-name">${winner?.username||'Auction Live'}</div><div class="cust-meta">${isLive?`Top bid: ${b.topBid?.amount||0} CR`:'Winner'}</div></div><div class="cust-badge"><span class="tag ${isLive?'tag-red':'tag-gold'}">${isLive?'LIVE':'ACTIVE'}</span></div>`;
     }else{
       el.className='cust-slot';
@@ -1478,25 +1140,38 @@ function renderOverview(){
   document.getElementById('ov-credits').textContent=me.credits;
   document.getElementById('pro-balance-label').textContent=me.credits;
   document.getElementById('transfer-balance-label').textContent=me.credits;
+ 
   const ps=me.proSlot;
   document.getElementById('ov-pro-status').innerHTML=ps?'<span class="sdot sdot-green"></span> Active':'<span class="sdot sdot-gray"></span> No active slot';
   document.getElementById('ov-pro-expiry').innerHTML=ps?`<div class="prog-bar" style="margin-top:8px;"><div class="prog-fill" style="width:${getExpPct(ps.expiry,ps.activatedAt||Date.now()-3600000)}%"></div></div><div class="prog-label">${formatTime(ps.expiry-Date.now())} remaining</div>`:'';
+ 
   const bs=me.bidSlot;
   document.getElementById('ov-bid-status').innerHTML=bs?'<span class="sdot sdot-gold"></span> Active (won)':'<span class="sdot sdot-gray"></span> No active slot';
   document.getElementById('ov-bid-expiry').innerHTML=bs?`<div class="prog-bar" style="margin-top:8px;"><div class="prog-fill" style="width:${getExpPct(bs.expiry,Date.now()-7200000)}%"></div></div><div class="prog-label">${formatTime(bs.expiry-Date.now())} remaining</div>`:'';
+ 
+  // Show loadstring (prefer server-provided, fallback to client-built)
   const activeSlot=ps||bs;
   const keyCard=document.getElementById('ov-key-card');
   if(activeSlot){
     keyCard.style.display='block';
-    document.getElementById('ov-key-label').textContent=(ps?'Pro':'Bid')+' Key';
-    document.getElementById('ov-key-text').textContent=activeSlot.key;
+    document.getElementById('ov-key-label').textContent=(ps?'Pro':'Bid')+' Loadstring';
+    const ls=activeSlot.loadstring||toLoadstring(activeSlot.key);
+    document.getElementById('ov-key-text').textContent=ls;
     document.getElementById('ov-key-prog').style.width=getExpPct(activeSlot.expiry,ps?(ps.activatedAt||Date.now()-3600000):Date.now()-7200000)+'%';
     document.getElementById('ov-key-time').textContent='Expires in '+formatTime(activeSlot.expiry-Date.now());
   }else keyCard.style.display='none';
+ 
   const pa=status.pro?.active||0,pm=status.pro?.max||6;
   document.getElementById('pro-cap-label').textContent=`${pa}/${pm}`;
   document.getElementById('pro-cap-dots').innerHTML=Array.from({length:pm},(_,i)=>`<div class="cap-dot ${i<pa?'filled':''}"></div>`).join('');
   document.getElementById('bid-cap-dots').innerHTML=(status.bid||[]).map(b=>`<div class="cap-dot ${b.status==='cooldown'?'cooldown':b.status==='live'?'live-bid':''}" style="width:18px;height:18px;border-radius:5px;" title="Slot: ${b.status}"></div>`).join('');
+ 
+  // Transfers history
+  const transfers=me.transfers||[];
+  if(transfers.length){
+    document.getElementById('transfer-history-card').style.display='block';
+    document.getElementById('transfer-history').innerHTML=transfers.map(t=>`<div class="transfer-item"><span style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--text3);">→ ${t.to}</span><span style="font-family:'JetBrains Mono',monospace;color:var(--gold);">${t.amount} CR</span><span style="font-size:0.7rem;color:var(--text3);">${timeAgo(t.at)}</span></div>`).join('');
+  }
 }
  
 // ── PRO PANEL ──
@@ -1506,14 +1181,19 @@ function renderProPanel(){
   document.getElementById('pro-active-card').style.display=ps?'block':'none';
   document.getElementById('pro-inactive-card').style.display=ps?'none':'block';
   if(ps){
-    document.getElementById('pro-key-text').textContent=ps.key;
+    const ls=ps.loadstring||toLoadstring(ps.key);
+    document.getElementById('pro-key-text').textContent=ls;
     document.getElementById('pro-prog').style.width=getExpPct(ps.expiry,ps.activatedAt||Date.now()-3600000)+'%';
     document.getElementById('pro-prog-label').textContent='Expires in '+formatTime(ps.expiry-Date.now());
   }
   const keys=me.proKeys||[];
   if(keys.length){
     document.getElementById('pro-history-card').style.display='block';
-    document.querySelector('#pro-history-table tbody').innerHTML=keys.map(k=>`<tr><td><span style="font-family:'JetBrains Mono',monospace;font-size:0.73rem;">${k.key?.slice(0,14)}…</span></td><td>${k.creditsSpent} CR</td><td>${timeAgo(k.activatedAt)}</td><td><span class="tag ${k.expiry>Date.now()?'tag-green':'tag-gray'}">${k.expiry>Date.now()?'ACTIVE':'EXPIRED'}</span></td></tr>`).join('');
+    document.querySelector('#pro-history-table tbody').innerHTML=keys.map(k=>{
+      const ls=k.loadstring||toLoadstring(k.key);
+      const preview=ls.length>40?ls.slice(0,40)+'…':ls;
+      return`<tr><td><span style="font-family:'JetBrains Mono',monospace;font-size:0.73rem;" title="${ls}">${preview}</span></td><td>${k.creditsSpent} CR</td><td>${timeAgo(k.activatedAt)}</td><td><span class="tag ${k.expiry>Date.now()?'tag-green':'tag-gray'}">${k.expiry>Date.now()?'ACTIVE':'EXPIRED'}</span></td></tr>`;
+    }).join('');
   }
 }
  
@@ -1521,19 +1201,23 @@ document.getElementById('pro-credits-input').addEventListener('input',function()
   const v=parseInt(this.value);
   const el=document.getElementById('pro-hours-preview');
   if(!v||v<=0){el.textContent='—';return;}
+  if(v%8!==0){el.innerHTML='<span style="color:var(--danger);">Must be a multiple of 8</span>';return;}
   el.innerHTML=`<span style="color:var(--gold);font-family:'JetBrains Mono',monospace;">${v} CR</span> = ${formatHours(v/8)}`;
 });
  
 async function activateProSlot(){
   const credits=parseInt(document.getElementById('pro-credits-input').value);
   if(!credits||credits<=0){toast('Enter a valid credit amount.','error');return;}
+  if(credits%8!==0){toast('Credits must be a multiple of 8 (1 hour = 8 credits).','error');return;}
   const btn=document.getElementById('pro-activate-btn');
   btn.disabled=true;btn.innerHTML='<span class="spin"></span> Activating…';
   try{
     const r=await fetch('/api/slot/pro/activate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({credits})});
     const d=await r.json();
     if(!r.ok){toast(d.error,'error');return;}
-    toast('Slot activated.','success');await refreshAll();
+    toast('Slot activated! Copy your loadstring below.','success');
+    await refreshAll();
+    showTab('pro');
   }catch{toast('Network error.','error');}
   finally{btn.disabled=false;btn.textContent='Activate Slot';}
 }
@@ -1546,16 +1230,24 @@ function renderBidPanel(){
     const isCool=b.status==='cooldown',isLive=b.status==='live';
     const dis=(isCool||b.paused)?'disabled':'';
     const stag=isCool?'<span class="tag tag-red">OCCUPIED</span>':isLive?'<span class="tag tag-gold">LIVE</span>':b.paused?'<span class="tag tag-red">PAUSED</span>':'<span class="tag tag-gray">WAITING</span>';
-    const timeEl=isLive&&b.endsAt?`<div class="bid-timer" id="bid-timer-${b.slotIndex}">${formatTime(b.endsAt-Date.now())}</div>`:isCool&&b.cooldownUntil?`<span style="font-size:0.78rem;color:var(--text3);font-family:'JetBrains Mono',monospace;">Unlocks ${formatTime(b.cooldownUntil-Date.now())}</span>`:`<span style="color:var(--text3);">—</span>`;
-    const topBid=b.topBid?`<span style="font-family:'JetBrains Mono',monospace;color:var(--gold);font-size:1.05rem;">${b.topBid.amount} CR</span>`:`<span style="color:var(--text3);">No bids</span>`;
+    const timeEl=isLive&&b.endsAt
+      ?`<div class="bid-timer" id="bid-timer-${b.slotIndex}">${formatTime(b.endsAt-Date.now())}</div>`
+      :isCool&&b.cooldownUntil
+        ?`<span style="font-size:0.78rem;color:var(--text3);font-family:'JetBrains Mono',monospace;">Unlocks ${formatTime(b.cooldownUntil-Date.now())}</span>`
+        :`<span style="color:var(--text3);">—</span>`;
+    const topBid=b.topBid
+      ?`<span style="font-family:'JetBrains Mono',monospace;color:var(--gold);font-size:1.05rem;">${b.topBid.amount} CR</span>`
+      :`<span style="color:var(--text3);">No bids</span>`;
     return`<div class="bid-slot-card ${isLive?'live':''}"><div class="bid-slot-name">Bid Slot ${b.slotIndex} ${stag}</div><div class="g2" style="gap:8px;margin-bottom:1rem;"><div class="card card-sm" style="background:rgba(255,255,255,0.03);"><div class="card-label">Top Bid</div>${topBid}</div><div class="card card-sm" style="background:rgba(255,255,255,0.03);"><div class="card-label">Time Left</div>${timeEl}</div></div><div style="font-size:0.73rem;color:var(--text3);margin-bottom:0.85rem;">${b.bidCount||0} bid(s) · Prize: 2h flat</div><button class="btn btn-gold btn-sm" ${dis} onclick="openBidModal(${b.slotIndex})">Place Bid</button></div>`;
   }).join('');
   (status.bid||[]).forEach(b=>{if(b.status==='live'&&b.endsAt)startBidTimer(b.slotIndex,b.endsAt);});
+ 
   const bSlot=me.bidSlot;
   const kc=document.getElementById('bid-key-card');
   if(bSlot){
     kc.style.display='block';
-    document.getElementById('bid-key-text').textContent=bSlot.key;
+    const ls=bSlot.loadstring||toLoadstring(bSlot.key);
+    document.getElementById('bid-key-text').textContent=ls;
     document.getElementById('bid-prog').style.width=getExpPct(bSlot.expiry,Date.now()-7200000)+'%';
     document.getElementById('bid-prog-label').textContent='Expires in '+formatTime(bSlot.expiry-Date.now());
   }else kc.style.display='none';
@@ -1567,7 +1259,7 @@ function startBidTimer(idx,endsAt){
     const el=document.getElementById(`bid-timer-${idx}`);
     if(!el){clearInterval(bidTimers[idx]);return;}
     const left=endsAt-Date.now();
-    if(left<=0){clearInterval(bidTimers[idx]);el.textContent='Ending…';refreshAll();return;}
+    if(left<=0){clearInterval(bidTimers[idx]);el.textContent='Ending…';return;}
     el.textContent=formatTime(left);
   },1000);
 }
@@ -1594,8 +1286,9 @@ async function submitBid(){
     const r=await fetch('/api/bid/place',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slotIndex:currentBidSlot,amount})});
     const d=await r.json();
     if(!r.ok){toast(d.error,'error');return;}
-    toast(d.isFirst?'Auction started.':'Bid placed.','success');
-    closeModal('bid-modal');await refreshAll();renderBidPanel();
+    toast(d.isFirst?'Auction started! Good luck.':'Bid placed!','success');
+    closeModal('bid-modal');
+    await refreshAll();
   }catch{toast('Network error.','error');}
   finally{btn.disabled=false;btn.textContent='Place Bid';}
 }
@@ -1622,23 +1315,26 @@ async function transferCredits(){
   const amount=parseInt(document.getElementById('transfer-amount').value);
   if(!targetId){toast('Enter a Discord user ID.','error');return;}
   if(!amount||amount<=0){toast('Enter a valid amount.','error');return;}
-  if(!confirm(`Send ${amount} credits to ${targetId}? Cannot be undone.`))return;
+  if(!confirm(`Send ${amount} credits to ${targetId}? This cannot be undone.`))return;
   try{
     const r=await fetch('/api/credits/transfer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({targetDiscordId:targetId,amount})});
     const d=await r.json();
     if(!r.ok){toast(d.error,'error');return;}
-    toast(`Sent ${amount} credits.`,'success');await refreshAll();
+    toast(`Sent ${amount} credits.`,'success');
+    document.getElementById('transfer-target').value='';
+    document.getElementById('transfer-amount').value='';
+    await refreshAll();
   }catch{toast('Network error.','error');}
 }
  
 // ── HWID ──
 async function resetHWID(type){
-  if(!confirm(`Reset HWID for your ${type.toUpperCase()} key?`))return;
+  if(!confirm(`Reset HWID for your ${type.toUpperCase()} key? You'll need to re-inject on a new device.`))return;
   try{
     const r=await fetch('/api/slot/reset-hwid',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type})});
     const d=await r.json();
     if(!r.ok){toast(d.error,'error');return;}
-    toast('HWID reset.','success');
+    toast('HWID reset successfully.','success');
   }catch{toast('Network error.','error');}
 }
  
@@ -1651,16 +1347,21 @@ async function loadAdminPanel(){
     document.getElementById('pause-pro-btn').textContent=d.pauseState.pro?'Unpause Pro':'Pause Pro';
     document.getElementById('pause-bid-btn').textContent=d.pauseState.bid?'Unpause Bid':'Pause Bid';
     document.getElementById('pause-status').textContent=`Pro: ${d.pauseState.pro?'PAUSED':'Active'} · Bid: ${d.pauseState.bid?'PAUSED':'Active'}`;
-    document.querySelector('#admin-users-table tbody').innerHTML=d.users.slice(0,50).map(u=>`<tr><td><div style="font-weight:600;font-size:0.82rem;">${u.username||'—'}</div><div style="font-size:0.68rem;color:var(--text3);font-family:'JetBrains Mono',monospace;">${u.id}</div></td><td><span style="font-family:'JetBrains Mono',monospace;color:var(--gold);">${u.credits} CR</span></td><td style="color:var(--text2);font-size:0.76rem;">${u.lastLogin?timeAgo(u.lastLogin):'—'}</td><td><button class="btn btn-ghost btn-xs" onclick="openGiveCredits('${u.id}','${(u.username||'').replace(/'/g,'')}',${u.credits})">Manage</button></td></tr>`).join('');
+    document.querySelector('#admin-users-table tbody').innerHTML=d.users.slice(0,50).map(u=>`<tr><td><div style="font-weight:600;font-size:0.82rem;">${u.username||'—'}</div><div style="font-size:0.68rem;color:var(--text3);font-family:'JetBrains Mono',monospace;">${u.id}</div></td><td><span style="font-family:'JetBrains Mono',monospace;color:var(--gold);">${u.credits} CR</span></td><td style="color:var(--text2);font-size:0.76rem;">${u.lastLogin?timeAgo(u.lastLogin):'—'}</td><td><button class="btn btn-ghost btn-xs" onclick="openGiveCredits('${u.id}','${(u.username||'').replace(/'/g,"\\'")}',${u.credits})">Manage</button></td></tr>`).join('');
   }catch(e){console.error(e);}
 }
+ 
 async function togglePause(type){
   const btn=document.getElementById(`pause-${type}-btn`);
   const isPaused=btn.textContent.includes('Unpause');
-  const r=await fetch('/api/admin/pause',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type,paused:!isPaused})});
-  if(!r.ok){toast('Error.','error');return;}
-  toast(`${type.toUpperCase()} ${!isPaused?'paused':'unpaused'}.`,'info');loadAdminPanel();
+  try{
+    const r=await fetch('/api/admin/pause',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type,paused:!isPaused})});
+    if(!r.ok){toast('Error.','error');return;}
+    toast(`${type.toUpperCase()} ${!isPaused?'paused':'unpaused'}.`,'info');
+    loadAdminPanel();
+  }catch{toast('Network error.','error');}
 }
+ 
 function openGiveCredits(id,username,credits){
   adminTarget={id,username,credits};
   document.getElementById('gcm-username').textContent=username||id;
@@ -1669,41 +1370,73 @@ function openGiveCredits(id,username,credits){
   document.getElementById('gcm-set-amount').value='';
   document.getElementById('give-credits-modal').classList.add('open');
 }
+ 
 async function adminGiveCredits(){
   const amount=parseInt(document.getElementById('gcm-amount').value);
   if(!amount||isNaN(amount)){toast('Enter an amount.','error');return;}
-  const r=await fetch('/api/admin/give-credits',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:adminTarget.id,amount})});
-  const d=await r.json();
-  if(!r.ok){toast(d.error,'error');return;}
-  toast(`Done. Balance: ${d.newBalance} CR`,'success');closeModal('give-credits-modal');loadAdminPanel();
+  try{
+    const r=await fetch('/api/admin/give-credits',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:adminTarget.id,amount})});
+    const d=await r.json();
+    if(!r.ok){toast(d.error,'error');return;}
+    toast(`Done. New balance: ${d.newBalance} CR`,'success');
+    closeModal('give-credits-modal');loadAdminPanel();
+  }catch{toast('Network error.','error');}
 }
+ 
 async function adminSetCredits(){
   const amount=parseInt(document.getElementById('gcm-set-amount').value);
   if(isNaN(amount)){toast('Enter a valid amount.','error');return;}
-  if(!confirm(`Set to ${amount} CR?`))return;
-  const r=await fetch('/api/admin/set-credits',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:adminTarget.id,amount})});
-  const d=await r.json();
-  if(!r.ok){toast(d.error,'error');return;}
-  toast(`Set to ${d.newBalance} CR.`,'success');closeModal('give-credits-modal');loadAdminPanel();
+  if(!confirm(`Set ${adminTarget.username||adminTarget.id} to ${amount} CR?`))return;
+  try{
+    const r=await fetch('/api/admin/set-credits',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:adminTarget.id,amount})});
+    const d=await r.json();
+    if(!r.ok){toast(d.error,'error');return;}
+    toast(`Set to ${d.newBalance} CR.`,'success');
+    closeModal('give-credits-modal');loadAdminPanel();
+  }catch{toast('Network error.','error');}
 }
+ 
 async function adminFindUser(){
   const q=document.getElementById('admin-user-search').value.trim();if(!q)return;
-  const r=await fetch(`/api/admin/find-user?query=${encodeURIComponent(q)}`);
-  const d=await r.json();
-  const el=document.getElementById('admin-user-results');
-  if(!d.length){el.innerHTML='<div style="color:var(--text3);font-size:0.82rem;">No users found.</div>';return;}
-  el.innerHTML=d.map(u=>`<div class="transfer-item"><span><strong>${u.username||'—'}</strong> <span style="color:var(--text3);font-size:0.7rem;font-family:'JetBrains Mono',monospace;">${u.id}</span></span><span style="font-family:'JetBrains Mono',monospace;color:var(--gold);font-size:0.78rem;">${u.credits} CR</span><button class="btn btn-ghost btn-xs" onclick="openGiveCredits('${u.id}','${(u.username||'').replace(/'/g,'')}',${u.credits})">Manage</button></div>`).join('');
+  try{
+    const r=await fetch(`/api/admin/find-user?query=${encodeURIComponent(q)}`);
+    const d=await r.json();
+    const el=document.getElementById('admin-user-results');
+    if(!d.length){el.innerHTML='<div style="color:var(--text3);font-size:0.82rem;">No users found.</div>';return;}
+    el.innerHTML=d.map(u=>`<div class="transfer-item"><span><strong>${u.username||'—'}</strong> <span style="color:var(--text3);font-size:0.7rem;font-family:'JetBrains Mono',monospace;">${u.id}</span></span><span style="font-family:'JetBrains Mono',monospace;color:var(--gold);font-size:0.78rem;">${u.credits} CR</span><button class="btn btn-ghost btn-xs" onclick="openGiveCredits('${u.id}','${(u.username||'').replace(/'/g,"\\'")}',${u.credits})">Manage</button></div>`).join('');
+  }catch{toast('Network error.','error');}
 }
-async function adminResetAuction(aId){if(!confirm(`Reset ${aId}?`))return;const r=await fetch('/api/admin/reset-auction',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({auctionId:aId})});toast((await r.json()).message||'Done','success');await refreshAll();}
-async function adminForceEnd(aId){if(!confirm(`Force-end ${aId}?`))return;await fetch('/api/admin/force-end-auction',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({auctionId:aId})});toast('Done','success');}
+ 
+async function adminResetAuction(aId){
+  if(!confirm(`Reset ${aId} and refund all bidders?`))return;
+  try{
+    const r=await fetch('/api/admin/reset-auction',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({auctionId:aId})});
+    const d=await r.json();
+    toast(d.success?'Auction reset.':'Error.','success');
+    await refreshAll();
+  }catch{toast('Network error.','error');}
+}
+ 
+async function adminForceEnd(aId){
+  if(!confirm(`Force-end ${aId}? Winner will be awarded a key now.`))return;
+  try{
+    await fetch('/api/admin/force-end-auction',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({auctionId:aId})});
+    toast('Auction force-ended.','success');
+    await refreshAll();
+  }catch{toast('Network error.','error');}
+}
  
 // ── TABS ──
 function showTab(tab){
+  currentTab=tab;
   document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.dash-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('sbtn-'+tab)?.classList.add('active');
   document.getElementById('panel-'+tab)?.classList.add('active');
   if(tab==='admin')loadAdminPanel();
+  if(tab==='pro')renderProPanel();
+  if(tab==='bid')renderBidPanel();
+  if(tab==='overview')renderOverview();
 }
  
 // ── UTILS ──
@@ -1713,38 +1446,65 @@ function copyKeyBox(boxId,textId){
   navigator.clipboard.writeText(text).then(()=>{
     const box=document.getElementById(boxId);
     box.classList.add('copied');
-    const btn=box.querySelector('.key-copy-btn');btn.textContent='Copied!';
-    setTimeout(()=>{box.classList.remove('copied');btn.textContent='Copy';},2000);
-    toast('Key copied.','success');
-  });
+    const btn=box.querySelector('.key-copy-btn');
+    if(btn){const orig=btn.textContent;btn.textContent='Copied!';setTimeout(()=>{box.classList.remove('copied');btn.textContent=orig;},2000);}
+    toast('Loadstring copied to clipboard.','success');
+  }).catch(()=>toast('Failed to copy — try manually selecting the text.','error'));
 }
+ 
 function copyText(text,el){
   navigator.clipboard.writeText(text).then(()=>{
     const orig=el.textContent;el.style.borderColor='var(--success)';el.textContent='Copied!';
     setTimeout(()=>{el.style.borderColor='';el.textContent=orig;},1500);
   });
 }
+ 
 function closeModal(id){document.getElementById(id).classList.remove('open');}
-function getExpPct(expiry,start){return Math.max(0,Math.min(100,((expiry-Date.now())/(expiry-start))*100));}
+ 
+// Close modals on backdrop click
+document.querySelectorAll('.modal-overlay').forEach(overlay=>{
+  overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.classList.remove('open');});
+});
+ 
+function getExpPct(expiry,start){
+  if(!start||!expiry)return 0;
+  return Math.max(0,Math.min(100,((expiry-Date.now())/(expiry-start))*100));
+}
+ 
 function formatTime(ms){
   if(ms<=0)return'0s';
   const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000),s=Math.floor((ms%60000)/1000);
   if(h>0)return`${h}h ${m}m`;if(m>0)return`${m}m ${s}s`;return`${s}s`;
 }
-function formatHours(h){if(h>=1)return`${h%1===0?h:h.toFixed(1)}h`;return`${Math.round(h*60)} min`;}
+ 
+function formatHours(h){
+  if(h>=1)return`${h%1===0?h:h.toFixed(1)}h`;return`${Math.round(h*60)} min`;
+}
+ 
 function timeAgo(ts){
-  if(!ts)return'—';const d=Date.now()-ts;
+  if(!ts)return'—';
+  const d=Date.now()-ts;
   if(d<60000)return'just now';if(d<3600000)return`${Math.floor(d/60000)}m ago`;
   if(d<86400000)return`${Math.floor(d/3600000)}h ago`;return`${Math.floor(d/86400000)}d ago`;
 }
+ 
 function toast(msg,type='info'){
-  const el=document.createElement('div');el.className=`toast-item ${type}`;
+  const el=document.createElement('div');
+  el.className=`toast-item ${type}`;
   el.textContent=msg;
   document.getElementById('toast').appendChild(el);
-  setTimeout(()=>el.remove(),4500);
+  setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(20px)';el.style.transition='all .3s';setTimeout(()=>el.remove(),300);},4000);
 }
  
-setInterval(refreshAll,15000);
+// ── KEYBOARD SHORTCUTS ──
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));
+    if(document.getElementById('mob-menu').classList.contains('open'))toggleMob();
+  }
+});
+ 
+// ── START ──
 init();
 </script>
 </body>
