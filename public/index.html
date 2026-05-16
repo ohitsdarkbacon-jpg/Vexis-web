@@ -513,34 +513,42 @@ select option{background:var(--surface2);}
   .hero-cta .btn{width:100%;max-width:280px;justify-content:center;}
 }
 @media(hover:none){body{cursor:auto;}#cursor{display:none;}}
-/* Fix sharp corners from glow effects */
+/* Fix sharp corners — keep glow, round corners */
 .hero-preview,
 .slot-display-card,
 .plan-card,
 .modal {
-  overflow: hidden;
   border-radius: var(--r3);
+  position: relative;
+  /* Don't use overflow:hidden here — it clips the glow */
 }
 
+/* Make pseudo-element glows inherit border-radius */
 .hero-preview::before,
 .hero-preview::after,
 .slot-display-card::before,
 .plan-card::before {
   border-radius: inherit;
+  content: '';
+  position: absolute;
+  inset: 0;
   pointer-events: none;
 }
 
+/* Ensure inner elements don't leak sharp edges */
 .hero-preview-inner,
 .slot-display-card .slot-dots-wrap,
 .modal .qr-card {
   border-radius: var(--r2);
-  overflow: hidden;
+  overflow: hidden;  /* safe here — no outer glow */
 }
 
-.backdrop-blur,
+/* If backdrop-filter causes edge pixelation, smooth it */
 .hero-preview-inner,
 .slot-display-card,
 .plan-card {
+  backdrop-filter: blur(10px);
+  border-radius: inherit;
   isolation: isolate;
 }
 </style>
