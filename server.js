@@ -152,41 +152,39 @@ async function createLuarmorKey(hours, discordId, username, projectId) {
     return null;
   };
 
-  const key = findKey(res.data);
-  if (!key) throw new Error('No key in Luarmor response');
+  const rawKey = findKey(res.data);
+  if (!rawKey) throw new Error('No key in Luarmor response');
 
   const LOADER_HASH = 'a956818a26401a68387b022f2525679a';
 
   const loadstring =
-    `script_key="${key}";` +
+    `script_key="${rawKey}";` +
     `loadstring(game:HttpGet("https://api.luarmor.net/files/v4/loaders/${LOADER_HASH}.lua"))()`;
 
   return {
-    key: loadstring,
-    rawKey: key,
+    key:    loadstring,   // full loadstring for the user to paste
+    rawKey,               // short key used for Luarmor API calls (HWID reset etc.)
     expiry: expiryUnix * 1000
   };
 }
 
-async function resetLuarmorHWID(userId, projectId) {
+// ===== HWID RESET =====
+// Uses the rawKey (short Luarmor key) — NOT the identifier or full loadstring.
+async function resetLuarmorHWID(rawKey, projectId) {
   try {
-    const username = users[userId]?.username || userId;
-    const identifier = getUserIdentifier(userId, username);
-
     await axios.patch(
       `https://api.luarmor.net/v3/projects/${projectId}/users`,
       {
-        identifier,
+        user_key:   rawKey,
         reset_hwid: true
       },
       {
         headers: {
-          Authorization: LUARMOR_API_KEY,
+          Authorization:  LUARMOR_API_KEY,
           'Content-Type': 'application/json'
         }
       }
     );
-
     return true;
   } catch (err) {
     console.error('Luarmor HWID reset failed:', err.response?.data || err.message);
@@ -293,13 +291,15 @@ async function endAuction(auctionId) {
 
   ensureUser(topBid.userId);
 
-  let key, expiry;
+  let key, rawKey, expiry;
   try {
     const { data: u } = await axios.get(`https://discord.com/api/v10/users/${topBid.userId}`, {
       headers: { Authorization: `Bot ${DISCORD_BOT_TOKEN}` }
     }).catch(() => ({ data: { username: topBid.userId } }));
     const result = await createLuarmorKey(BID_CONFIG.prizeHours, topBid.userId, u.username || topBid.userId, BID_CONFIG.projectId);
-    key = result.key; expiry = result.expiry;
+    key    = result.key;
+    rawKey = result.rawKey;
+    expiry = result.expiry;
   } catch (err) {
     console.error('Key gen failed for', auctionId, err.message);
     users[topBid.userId].credits += topBid.amount;
@@ -313,13 +313,14 @@ async function endAuction(auctionId) {
   saveAuctions();
 
   slots = slots.filter(s => !(s.userId === topBid.userId && s.type === 'bid'));
-  slots.push({ userId: topBid.userId, key, expiry, type: 'bid', auctionId, projectId: BID_CONFIG.projectId });
+  // Store rawKey on the slot so HWID reset can use it later
+  slots.push({ userId: topBid.userId, key, rawKey, expiry, type: 'bid', auctionId, projectId: BID_CONFIG.projectId });
   saveSlots();
 
-  // Store key for dashboard
+  // Store key for dashboard — include rawKey so HWID reset works for any recent key
   ensureUser(topBid.userId);
   if (!users[topBid.userId].bidKeys) users[topBid.userId].bidKeys = [];
-  users[topBid.userId].bidKeys.unshift({ key, expiry, auctionId, wonAt: Date.now() });
+  users[topBid.userId].bidKeys.unshift({ key, rawKey, expiry, auctionId, wonAt: Date.now() });
   users[topBid.userId].bidKeys = users[topBid.userId].bidKeys.slice(0, 5);
   saveUsers();
 
@@ -459,12 +460,13 @@ app.post('/api/slot/pro/activate', requireAuth, async (req, res) => {
   if (activeCount >= PRO_CONFIG.maxSlots) return res.status(400).json({ error: 'All Pro slots are full.' });
 
   try {
-    const { key, expiry } = await createLuarmorKey(hours, id, username, PRO_CONFIG.projectId);
+    const { key, rawKey, expiry } = await createLuarmorKey(hours, id, username, PRO_CONFIG.projectId);
     slots = slots.filter(s => !(s.userId === id && s.type === 'pro'));
-    slots.push({ userId: id, key, expiry, type: 'pro', projectId: PRO_CONFIG.projectId, activatedAt: Date.now() });
+    // Store rawKey on the slot so HWID reset can use it later
+    slots.push({ userId: id, key, rawKey, expiry, type: 'pro', projectId: PRO_CONFIG.projectId, activatedAt: Date.now() });
     users[id].credits -= creditsNum;
     if (!users[id].proKeys) users[id].proKeys = [];
-    users[id].proKeys.unshift({ key, expiry, creditsSpent: creditsNum, activatedAt: Date.now() });
+    users[id].proKeys.unshift({ key, rawKey, expiry, creditsSpent: creditsNum, activatedAt: Date.now() });
     users[id].proKeys = users[id].proKeys.slice(0, 10);
     saveUsers(); saveSlots();
     res.json({ success: true, key, expiry, hours, creditsSpent: creditsNum, creditsRemaining: users[id].credits });
@@ -475,12 +477,28 @@ app.post('/api/slot/pro/activate', requireAuth, async (req, res) => {
 });
 
 // ===== API: RESET HWID =====
+// Looks up the active slot for the user, grabs its rawKey, and sends it to Luarmor.
 app.post('/api/slot/reset-hwid', requireAuth, async (req, res) => {
   const { id } = req.session.user;
   const { type } = req.body;
+
+  if (!['pro', 'bid'].includes(type)) {
+    return res.status(400).json({ error: 'Invalid slot type.' });
+  }
+
   const projectId = type === 'pro' ? PRO_CONFIG.projectId : BID_CONFIG.projectId;
+
+  // Find the user's active slot of the requested type
+  const slot = slots.find(s => s.userId === id && s.type === type && s.expiry > Date.now());
+  if (!slot) {
+    return res.status(404).json({ error: 'No active slot found.' });
+  }
+  if (!slot.rawKey) {
+    return res.status(400).json({ error: 'Raw key unavailable for this slot. Please activate a new slot to enable HWID reset.' });
+  }
+
   try {
-    await resetLuarmorHWID(id, projectId);
+    await resetLuarmorHWID(slot.rawKey, projectId);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
