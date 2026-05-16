@@ -121,7 +121,6 @@ function isBidSlotOnCooldown(slotIndex) {
   const a   = auctions[aId];
   return a?.cooldownUntil && a.cooldownUntil > Date.now();
 }
-
 async function createLuarmorKey(hours, discordId, username, projectId) {
   const expiryUnix = Math.floor(Date.now() / 1000) + Math.floor(hours * 3600);
   const identifier = getUserIdentifier(discordId, username);
@@ -130,6 +129,22 @@ async function createLuarmorKey(hours, discordId, username, projectId) {
     { discord_id: discordId, identifier, auth_expire: expiryUnix, note: `${username} (${discordId})` },
     { headers: { Authorization: LUARMOR_API_KEY, 'Content-Type': 'application/json' } }
   );
+  const findKey = obj => {
+    if (typeof obj === 'string' && /^[A-Za-z0-9]{6,}$/.test(obj)) return obj;
+    if (typeof obj === 'object' && obj) {
+      for (const v of Object.values(obj)) { const k = findKey(v); if (k) return k; }
+    }
+    return null;
+  };
+  const shortKey = findKey(res.data);
+  if (!shortKey) throw new Error('No key in Luarmor response');
+
+  // Build the full loader string – this becomes the "key" from now on
+  const LOADER_HASH = 'a956818a26401a68387b022f2525679a';
+  const fullLoader = `script_key="${shortKey}"; loadstring(game:HttpGet("https://api.luarmor.net/files/v4/loaders/${LOADER_HASH}.lua"))()`;
+  
+  return { key: fullLoader, expiry: expiryUnix * 1000 };
+}
   const findKey = obj => {
     if (typeof obj === 'string' && /^[A-Za-z0-9]{6,}$/.test(obj)) return obj;
     if (typeof obj === 'object' && obj) {
