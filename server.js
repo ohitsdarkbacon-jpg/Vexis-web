@@ -130,32 +130,18 @@ async function createLuarmorKey(hours, discordId, username, projectId) {
     { discord_id: discordId, identifier, auth_expire: expiryUnix, note: `${username} (${discordId})` },
     { headers: { Authorization: LUARMOR_API_KEY, 'Content-Type': 'application/json' } }
   );
-  
-  // Extract both key and loader from response
-  const key = res.data.key || null;
-  const loader = res.data.loader || null;
-  
-  if (!key && !loader) {
-    // Fallback: try to find loader in nested response
-    const findLoader = (obj) => {
-      if (typeof obj === 'string' && obj.includes('loadstring')) return obj;
-      if (obj && typeof obj === 'object') {
-        for (const v of Object.values(obj)) {
-          const found = findLoader(v);
-          if (found) return found;
-        }
-      }
-      return null;
-    };
-    const foundLoader = findLoader(res.data);
-    if (foundLoader) {
-      return { key: 'loader_only', expiry: expiryUnix * 1000, loader: foundLoader };
+  const findKey = obj => {
+    if (typeof obj === 'string' && /^[A-Za-z0-9]{6,}$/.test(obj)) return obj;
+    if (typeof obj === 'object' && obj) {
+      for (const v of Object.values(obj)) { const k = findKey(v); if (k) return k; }
     }
-    throw new Error('No key or loader in Luarmor response');
-  }
-  
-  return { key: key || 'script', expiry: expiryUnix * 1000, loader: loader || `loadstring(game:HttpGet("https://api.luarmor.net/v3/projects/${projectId}/loader/${key}"))()` };
+    return null;
+  };
+  const key = findKey(res.data);
+  if (!key) throw new Error('No key in Luarmor response');
+  return { key, expiry: expiryUnix * 1000 };
 }
+
 async function resetLuarmorHWID(userId, projectId) {
   const identifier = getUserIdentifier(userId, userId);
   await axios.patch(
@@ -264,13 +250,13 @@ async function endAuction(auctionId) {
 
   ensureUser(topBid.userId);
 
-  let key, expiry, loader;
+  let key, expiry;
   try {
     const { data: u } = await axios.get(`https://discord.com/api/v10/users/${topBid.userId}`, {
       headers: { Authorization: `Bot ${DISCORD_BOT_TOKEN}` }
     }).catch(() => ({ data: { username: topBid.userId } }));
     const result = await createLuarmorKey(BID_CONFIG.prizeHours, topBid.userId, u.username || topBid.userId, BID_CONFIG.projectId);
-key = result.key; expiry = result.expiry; loader = result.loader;
+    key = result.key; expiry = result.expiry;
   } catch (err) {
     console.error('Key gen failed for', auctionId, err.message);
     users[topBid.userId].credits += topBid.amount;
@@ -284,12 +270,13 @@ key = result.key; expiry = result.expiry; loader = result.loader;
   saveAuctions();
 
   slots = slots.filter(s => !(s.userId === topBid.userId && s.type === 'bid'));
-  slots.push({ userId: topBid.userId, key, loader, expiry, type: 'bid', auctionId, projectId: BID_CONFIG.projectId });
+  slots.push({ userId: topBid.userId, key, expiry, type: 'bid', auctionId, projectId: BID_CONFIG.projectId });
+  saveSlots();
 
   // Store key for dashboard
   ensureUser(topBid.userId);
   if (!users[topBid.userId].bidKeys) users[topBid.userId].bidKeys = [];
-  users[topBid.userId].bidKeys.unshift({ key, loader, expiry, auctionId, wonAt: Date.now() });
+  users[topBid.userId].bidKeys.unshift({ key, expiry, auctionId, wonAt: Date.now() });
   users[topBid.userId].bidKeys = users[topBid.userId].bidKeys.slice(0, 5);
   saveUsers();
 
@@ -424,7 +411,7 @@ if (creditsNum % 8 !== 0) return res.status(400).json({ error: 'Only full hours 
 if (creditsNum > users[id].credits) return res.status(400).json({ error: 'Insufficient credits.' });
 const hours = creditsNum / 8;   // ← only one declaration
   try {
-    const { key, expiry, loader } = await createLuarmorKey(hours, id, username, PRO_CONFIG.projectId);
+    const { key, expiry } = await createLuarmorKey(hours, id, username, PRO_CONFIG.projectId);
     slots = slots.filter(s => !(s.userId === id && s.type === 'pro'));
     slots.push({ userId: id, key, expiry, type: 'pro', projectId: PRO_CONFIG.projectId, activatedAt: Date.now() });
     users[id].credits -= creditsNum;
@@ -432,7 +419,7 @@ const hours = creditsNum / 8;   // ← only one declaration
     users[id].proKeys.unshift({ key, expiry, creditsSpent: creditsNum, activatedAt: Date.now() });
     users[id].proKeys = users[id].proKeys.slice(0, 10);
     saveUsers(); saveSlots();
-    res.json({ success: true, key, loader, expiry, hours, creditsSpent: creditsNum, creditsRemaining: users[id].credits });
+    res.json({ success: true, key, expiry, hours, creditsSpent: creditsNum, creditsRemaining: users[id].credits });
   } catch (err) {
     console.error('Pro activate error:', err.message);
     res.status(500).json({ error: `Luarmor error: ${err.message}` });
