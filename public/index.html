@@ -551,6 +551,44 @@ select option{background:var(--surface2);}
   border-radius: inherit;
   isolation: isolate;
 }
+/* Keep slot cards rounded and glowing properly */
+.slot-display-card {
+  border-radius: var(--r2) !important;
+  overflow: hidden;  /* needed to keep inner content rounded, glow is on parent wrapper */
+  position: relative;
+}
+
+/* Make the top gradient line follow the rounded corner */
+.slot-display-card::before {
+  border-radius: var(--r2) var(--r2) 0 0;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(245,166,35,0.3), transparent);
+  pointer-events: none;
+}
+
+/* Ensure the card's border stays rounded */
+.slot-display-card.pro-card,
+.slot-display-card.bid-card {
+  border-radius: var(--r2) !important;
+}
+
+/* Fix any inner glow or shadow that spills outside */
+.slot-dots-wrap,
+.sdc-stats {
+  border-radius: var(--r);
+  overflow: hidden;  /* safe inside */
+}
+
+/* Restore any lost backdrop-filter rounding */
+.slot-display-card {
+  backdrop-filter: blur(12px);
+  isolation: auto;  /* don't isolate, let glow blend */
+}
 </style>
 </head>
 <body>
