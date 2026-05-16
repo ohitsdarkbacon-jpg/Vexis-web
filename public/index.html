@@ -700,6 +700,41 @@ select option{background:var(--surface2);}
   margin-top: 1rem !important;
   padding-top: 1rem !important;
 }
+  /* Remove ANY pseudo-element that could overlap text inside slot cards */
+.slot-display-card::before,
+.slot-display-card::after,
+.slot-display-card *::before,
+.slot-display-card *::after {
+  display: none !important;
+}
+
+/* Also remove any top gradient line that may be positioned over text */
+.slot-display-card {
+  overflow: visible !important;
+}
+
+/* Ensure no extra borders on the header or label */
+.sdc-head,
+.slot-dots-label,
+.sdc-title {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Force the text container to be above everything */
+.slot-dots-wrap,
+.sdc-head,
+.sdc-stats {
+  position: relative;
+  z-index: 5;
+}
+
+/* If there's an inset border on the card itself, kill it */
+.slot-display-card {
+  border: 1px solid var(--border2) !important;  /* keep visible border but no inset */
+  box-shadow: none !important;
+}
 </style>
 </head>
 <body>
