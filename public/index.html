@@ -518,41 +518,74 @@ nav{
 .slot-dots-wrap{margin-bottom:1.25rem;}
 .slot-dots-label{font-size:0.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-bottom:0.6rem;display:flex;align-items:center;justify-content:space-between;}
 .slot-dots-label span{font-family:'JetBrains Mono',monospace;}
-.slot-dots{display:flex;gap:7px;flex-wrap:wrap;}
-.sdot-block{
-  width:36px;height:36px;border-radius:10px;
-  border:1px solid rgba(255,255,255,0.07);
-  background:rgba(255,255,255,0.03);
-  display:flex;align-items:center;justify-content:center;
-  font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text3);
-  transition:all .3s ease;
-  position:relative;
+.slot-dots{display:flex;gap:10px;flex-wrap:wrap;}
+.slot-dot{
+  width:42px;
+  height:42px;
+  border-radius:12px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.7rem;
+  font-weight:600;
+  color:var(--text3);
+  transition:all 0.2s;
 }
-.sdot-block.occupied{
-  background:rgba(255,77,106,0.12);
-  border-color:rgba(255,77,106,0.35);
+.slot-dot.occupied{
+  background:rgba(255,77,106,0.15);
+  border-color:rgba(255,77,106,0.4);
   color:var(--danger);
 }
-.sdot-block.occupied.bid{
-  background:rgba(245,166,35,0.1);
+.slot-dot.occupied.bid{
+  background:rgba(245,166,35,0.12);
   border-color:rgba(245,166,35,0.3);
   color:var(--gold);
 }
-.sdot-block.occupied.live{
-  background:rgba(255,77,106,0.15);
-  border-color:rgba(255,77,106,0.5);
-  animation:slotPulse 2s ease infinite;
+.slot-dot.occupied.live{
+  background:rgba(255,77,106,0.2);
+  border-color:rgba(255,77,106,0.6);
+  animation:pulse 1.5s infinite;
 }
-.sdot-block.empty{opacity:0.4;}
-@keyframes slotPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,77,106,0);}50%{box-shadow:0 0 0 4px rgba(255,77,106,0.15);}}
- 
-.sdc-stats{display:flex;gap:0;border-top:1px solid rgba(255,255,255,0.05);margin-top:0.25rem;padding-top:1rem;}
-.sdc-stat{flex:1;text-align:center;border-right:1px solid rgba(255,255,255,0.05);}
+@keyframes pulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(255,77,106,0.2);}
+  50%{box-shadow:0 0 0 6px rgba(255,77,106,0);}
+}
+.slot-dot.empty{
+  opacity:0.5;
+}
+.sdc-stats{
+  display:flex;
+  gap:0;
+  border-top:1px solid rgba(255,255,255,0.05);
+  margin-top:1rem;
+  padding-top:1rem;
+}
+.sdc-stat{
+  flex:1;
+  text-align:center;
+  border-right:1px solid rgba(255,255,255,0.05);
+}
 .sdc-stat:last-child{border-right:none;}
-.sdc-stat-val{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:500;color:var(--text);}
+.sdc-stat-val{
+  font-family:'JetBrains Mono',monospace;
+  font-size:1.2rem;
+  font-weight:600;
+  color:var(--text);
+}
 .sdc-stat-val.available{color:var(--success);}
 .sdc-stat-val.full{color:var(--danger);}
 .sdc-stat-val.gold{color:var(--gold);}
+.sdc-stat-lbl{
+  font-size:0.6rem;
+  color:var(--text3);
+  text-transform:uppercase;
+  letter-spacing:0.1em;
+  margin-top:4px;
+  font-weight:600;
+}
 .sdc-stat-lbl{font-size:0.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-top:3px;font-weight:600;}
  
 /* Stats */
@@ -1552,75 +1585,110 @@ async function refreshAll(){
  
 // ── HOME SLOTS DISPLAY (accurate + centered) ──
 function renderHomeSlotsDisplay(){
-  if(!status)return;
- 
-  // PRO
-  const proActive=status.pro?.active||0;
-  const proMax=status.pro?.max||6;
-  const proSlots=status.pro?.slots||[];
-  const proAvail=proMax-proActive;
- 
-  document.getElementById('home-pro-badge').textContent=proActive>=proMax?'FULL':`${proAvail} OPEN`;
-  document.getElementById('home-pro-count-label').textContent=`${proActive}/${proMax} occupied`;
-  document.getElementById('home-pro-avail').textContent=proAvail;
-  document.getElementById('home-pro-avail').className='sdc-stat-val '+(proAvail>0?'available':'full');
-  document.getElementById('home-pro-taken').textContent=proActive;
-  document.getElementById('home-pro-next').textContent=status.pro?.nextFreeIn?formatTime(status.pro.nextFreeIn):proAvail>0?'Now':'—';
- 
-  // Render per-slot dots with real data
-  const proDots=document.getElementById('home-pro-dots');
-  proDots.innerHTML='';
-  for(let i=1;i<=proMax;i++){
-    const slotData=proSlots.find(s=>s.slotIndex===i);
-    const el=document.createElement('div');
-    el.className='sdot-block '+(slotData?.userId?'occupied':'empty');
-    if(slotData?.username){
-      el.title=slotData.username;
-      el.textContent=slotData.username[0]?.toUpperCase()||'#';
-    }else{
-      el.textContent=i;
+  if(!status) return;
+  
+  // PRO SLOTS
+  const proActive = status.pro?.active || 0;
+  const proMax = status.pro?.max || 6;
+  const proSlots = status.pro?.slots || [];
+  const proAvail = proMax - proActive;
+  
+  // Update PRO badges
+  const proBadge = document.getElementById('home-pro-badge');
+  if(proBadge) proBadge.textContent = proAvail > 0 ? `${proAvail} OPEN` : 'FULL';
+  
+  const proAvailEl = document.getElementById('home-pro-avail');
+  if(proAvailEl) proAvailEl.textContent = proAvail;
+  
+  const proTakenEl = document.getElementById('home-pro-taken');
+  if(proTakenEl) proTakenEl.textContent = proActive;
+  
+  // Render PRO dots
+  const proDots = document.getElementById('home-pro-dots');
+  if(proDots){
+    proDots.innerHTML = '';
+    for(let i = 1; i <= proMax; i++){
+      const slotData = proSlots.find(s => s.slotIndex === i);
+      const dot = document.createElement('div');
+      dot.className = 'slot-dot';
+      if(slotData?.userId){
+        dot.classList.add('occupied');
+        dot.textContent = slotData.username ? slotData.username[0].toUpperCase() : '●';
+        dot.title = slotData.username || 'Occupied';
+      } else {
+        dot.classList.add('empty');
+        dot.textContent = i;
+      }
+      proDots.appendChild(dot);
     }
-    proDots.appendChild(el);
   }
- 
-  // BID
-  const bidSlots=status.bid||[];
-  const liveBid=bidSlots.find(b=>b.status==='live');
-  const occupiedBids=bidSlots.filter(b=>b.status==='live'||b.status==='cooldown').length;
-  const topBidAmt=liveBid?.topBid?.amount||0;
- 
-  document.getElementById('home-bid-badge').textContent=occupiedBids===bidSlots.length?'ACTIVE':occupiedBids===0?'OPEN':`${occupiedBids}/${bidSlots.length} LIVE`;
-  document.getElementById('home-bid-count-label').textContent=`${occupiedBids}/${bidSlots.length} active`;
-  document.getElementById('home-bid-top').textContent=topBidAmt?`${topBidAmt} CR`:'None';
- 
-  const bidDots=document.getElementById('home-bid-dots');
-  bidDots.innerHTML='';
-  bidSlots.forEach((b,i)=>{
-    const el=document.createElement('div');
-    const isLive=b.status==='live',isCool=b.status==='cooldown';
-    el.className='sdot-block '+(isLive?'occupied live':isCool?'occupied bid':'empty');
-    el.style.width='48px';el.style.borderRadius='12px';
-    el.title=`Slot ${b.slotIndex}: ${b.status}`;
-    el.textContent=isLive?'LIVE':isCool?'WON':(i+1);
-    el.style.fontSize='0.55rem';
-    bidDots.appendChild(el);
-  });
- 
-  // Bid timer
+  
+  // BID SLOTS
+  const bidSlots = status.bid || [];
+  const liveBid = bidSlots.find(b => b.status === 'live');
+  const occupiedBids = bidSlots.filter(b => b.status === 'live' || b.status === 'cooldown').length;
+  const topBidAmt = liveBid?.topBid?.amount || 0;
+  
+  // Update BID badges
+  const bidBadge = document.getElementById('home-bid-badge');
+  if(bidBadge){
+    if(occupiedBids === 0) bidBadge.textContent = 'OPEN';
+    else if(occupiedBids === bidSlots.length) bidBadge.textContent = 'FULL';
+    else bidBadge.textContent = `${occupiedBids}/${bidSlots.length} ACTIVE`;
+  }
+  
+  const bidTopEl = document.getElementById('home-bid-top');
+  if(bidTopEl) bidTopEl.textContent = topBidAmt ? `${topBidAmt} CR` : 'None';
+  
+  // Render BID dots
+  const bidDots = document.getElementById('home-bid-dots');
+  if(bidDots){
+    bidDots.innerHTML = '';
+    bidSlots.forEach((slot, idx) => {
+      const dot = document.createElement('div');
+      dot.className = 'slot-dot';
+      if(slot.status === 'live'){
+        dot.classList.add('occupied', 'live');
+        dot.textContent = '●';
+        dot.title = `LIVE - Top bid: ${slot.topBid?.amount || 0} CR`;
+      } else if(slot.status === 'cooldown'){
+        dot.classList.add('occupied', 'bid');
+        dot.textContent = '✓';
+        dot.title = `Won by ${slot.winner?.username || 'winner'}`;
+      } else {
+        dot.classList.add('empty');
+        dot.textContent = idx + 1;
+        dot.title = `Slot ${idx + 1} - Available`;
+      }
+      bidDots.appendChild(dot);
+    });
+  }
+  
+  // Update timer
   if(liveBid?.endsAt){
-    if(homeBidTimerInterval)clearInterval(homeBidTimerInterval);
-    const el=document.getElementById('home-bid-timer');
-    function tick(){const left=liveBid.endsAt-Date.now();if(left<=0){clearInterval(homeBidTimerInterval);el.textContent='Ending…';return;}el.textContent=formatTime(left);}
-    tick();homeBidTimerInterval=setInterval(tick,1000);
-  }else{
-    document.getElementById('home-bid-timer').textContent=occupiedBids>0?'Active':'No auction';
+    if(homeBidTimerInterval) clearInterval(homeBidTimerInterval);
+    const timerEl = document.getElementById('home-bid-timer');
+    function tick(){
+      const left = liveBid.endsAt - Date.now();
+      if(left <= 0){
+        clearInterval(homeBidTimerInterval);
+        if(timerEl) timerEl.textContent = 'Ending...';
+        return;
+      }
+      if(timerEl) timerEl.textContent = formatTime(left);
+    }
+    tick();
+    homeBidTimerInterval = setInterval(tick, 1000);
+  } else {
+    const timerEl = document.getElementById('home-bid-timer');
+    if(timerEl) timerEl.textContent = occupiedBids > 0 ? 'Active' : 'No auction';
   }
- 
-  // Update live stats counter
-  const totalActive=proActive+occupiedBids;
-  document.getElementById('stat-active-subs').textContent=totalActive||26;
+  
+  // Update active subs count
+  const totalActive = proActive + occupiedBids;
+  const statEl = document.getElementById('stat-active-subs');
+  if(statEl) statEl.textContent = totalActive || 26;
 }
- 
 // ── PRODUCTS PAGE ──
 function updateProductsPage(){
   if(!status)return;
