@@ -145,17 +145,6 @@ async function createLuarmorKey(hours, discordId, username, projectId) {
   
   return { key: fullLoader, expiry: expiryUnix * 1000 };
 }
-  const findKey = obj => {
-    if (typeof obj === 'string' && /^[A-Za-z0-9]{6,}$/.test(obj)) return obj;
-    if (typeof obj === 'object' && obj) {
-      for (const v of Object.values(obj)) { const k = findKey(v); if (k) return k; }
-    }
-    return null;
-  };
-  const key = findKey(res.data);
-  if (!key) throw new Error('No key in Luarmor response');
-  return { key, expiry: expiryUnix * 1000 };
-}
 
 async function resetLuarmorHWID(userId, projectId) {
   const identifier = getUserIdentifier(userId, userId);
