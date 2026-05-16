@@ -141,19 +141,24 @@ async function createLuarmorKey(hours, discordId, username, projectId) {
     }
   );
 
-  const findKey = obj => {
-    if (typeof obj === 'string' && /^[A-Za-z0-9]{6,}$/.test(obj)) return obj;
-    if (typeof obj === 'object' && obj) {
-      for (const v of Object.values(obj)) {
-        const k = findKey(v);
-        if (k) return k;
-      }
-    }
-    return null;
-  };
+  // Log the full response so we can see exactly what Luarmor returns
+  console.log('Luarmor response:', JSON.stringify(res.data, null, 2));
 
-  const rawKey = findKey(res.data);
-  if (!rawKey) throw new Error('No key in Luarmor response');
+  const data = res.data;
+
+  // Check known Luarmor v3 field names first (most likely candidates)
+  const rawKey =
+    data?.user_key   ||   // primary field name in v3
+    data?.key        ||   // alternate
+    data?.script_key ||   // alternate
+    data?.data?.user_key ||
+    data?.data?.key  ||
+    data?.data?.script_key ||
+    null;
+
+  if (!rawKey || typeof rawKey !== 'string') {
+    throw new Error(`No key in Luarmor response. Full response: ${JSON.stringify(data)}`);
+  }
 
   const LOADER_HASH = 'a956818a26401a68387b022f2525679a';
 
