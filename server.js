@@ -409,6 +409,12 @@ app.post('/api/slot/pro/activate', requireAuth, async (req, res) => {
   if (!creditsNum || creditsNum <= 0) return res.status(400).json({ error: 'Invalid credits amount.' });
   if (creditsNum > users[id].credits) return res.status(400).json({ error: 'Insufficient credits.' });
 
+  // Enforce full hours only (8 credits = 1 hour)
+if (creditsNum % 8 !== 0) {
+  return res.status(400).json({ error: 'You can only purchase full hours. Minimum 8 credits (1 hour), then multiples of 8.' });
+}
+const hours = creditsNum / 8;   // <-- replace the old hours calculation
+
   const hours = creditsNum / PRO_CONFIG.pricePerHour;
   if (hours < 0.125) return res.status(400).json({ error: 'Minimum 1 credit ($1) for ~7.5 minutes.' });
 
